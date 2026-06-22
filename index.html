@@ -1,13 +1,53 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <title>PharmaPromo - Promotions laboratoires pour pharmacies d’officine</title>
+
+    <meta
+      name="description"
+      content="PharmaPromo centralise les promotions laboratoires destinées aux pharmacies d’officine : remises, unités offertes, réassorts, offres actives et familles produits."
+    />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pharmapromo-mvp</title>
+
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="PharmaPromo" />
+    <meta name="theme-color" content="#0B45D9" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "PharmaPromo",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "inLanguage": "fr-FR",
+        "description": "Plateforme web permettant aux pharmacies d’officine de consulter les promotions actives des laboratoires pharmaceutiques.",
+        "audience": {
+          "@type": "Audience",
+          "audienceType": "Pharmacies d’officine et laboratoires pharmaceutiques"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "EUR",
+          "description": "Consultation gratuite des promotions pour les pharmacies."
+        }
+      }
+    </script>
   </head>
+
   <body>
+    <noscript>
+      PharmaPromo centralise les promotions des laboratoires pharmaceutiques pour les pharmacies d’officine : remises, unités offertes, réassorts et offres actives.
+    </noscript>
+
     <div id="root"></div>
+
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
