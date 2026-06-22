@@ -1,0 +1,375 @@
+.register-page {
+  min-height: 100vh;
+  background: #F7FAFF;
+  padding: 40px 24px 80px;
+  display: flex;
+  align-items: center;
+}
+
+.register-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.register-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: start;
+}
+
+/* Left */
+.register-left {
+  background: white;
+  border-radius: 28px;
+  padding: 40px;
+  box-shadow: 0 8px 24px rgba(11, 69, 217, 0.06);
+  border: 1px solid rgba(228, 234, 247, 0.5);
+}
+
+.register-back {
+  background: none;
+  border: none;
+  color: #667399;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0 0 20px 0;
+  transition: color 0.2s ease;
+  font-family: inherit;
+}
+
+.register-back:hover {
+  color: #0B45D9;
+}
+
+.register-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #061B5B;
+  margin: 0 0 8px 0;
+  line-height: 1.15;
+}
+
+.register-subtitle {
+  font-size: 16px;
+  color: #667399;
+  margin: 0 0 32px 0;
+  line-height: 1.6;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.register-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.register-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #07194A;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.register-input,
+.register-textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid #E4EAF7;
+  font-size: 16px;
+  font-family: inherit;
+  color: #07194A;
+  background: #FAFBFF;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.register-input:focus,
+.register-textarea:focus {
+  background: white;
+  border-color: #0B45D9;
+  box-shadow: 0 0 0 4px rgba(11, 69, 217, 0.08);
+}
+
+.register-input {
+  height: 52px;
+}
+
+.register-textarea {
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.register-submit {
+  background: #0B45D9;
+  color: white;
+  border: none;
+  padding: 16px 48px;
+  border-radius: 60px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 8px 24px rgba(11, 69, 217, 0.25);
+  width: 100%;
+  margin-top: 8px;
+}
+
+.register-submit:hover:not(:disabled) {
+  background: #0A3DBF;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(11, 69, 217, 0.35);
+}
+
+.register-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Right illustration */
+.register-right {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.register-illustration {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  min-height: 360px;
+}
+
+.register-illustration-card {
+  position: absolute;
+  background: white;
+  border-radius: 20px;
+  padding: 20px 24px;
+  box-shadow: 0 8px 24px rgba(11, 69, 217, 0.08);
+  border: 1px solid rgba(228, 234, 247, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: transform 0.3s ease;
+}
+
+.register-illustration-card:hover {
+  transform: translateY(-4px) scale(1.02);
+}
+
+.card-lab {
+  top: 0;
+  left: 5%;
+  background: linear-gradient(135deg, #FFFFFF, #F0F5FF);
+  border-left: 4px solid #0B45D9;
+}
+
+.card-products {
+  top: 30%;
+  right: 0;
+  background: linear-gradient(135deg, #FFFFFF, #F0FFFA);
+  border-left: 4px solid #24B8A9;
+}
+
+.card-promos {
+  bottom: 5%;
+  left: 0;
+  background: linear-gradient(135deg, #FFFFFF, #FFF5F7);
+  border-left: 4px solid #FF5F8F;
+}
+
+.card-documents {
+  bottom: 20%;
+  right: 8%;
+  background: linear-gradient(135deg, #FFFFFF, #F7FAFF);
+  border-left: 4px solid #061B5B;
+}
+
+.card-icon-img {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.card-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #061B5B;
+}
+
+/* Success state */
+.register-success {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+}
+
+.register-success-content {
+  text-align: center;
+  background: white;
+  border-radius: 28px;
+  padding: 64px 56px;
+  max-width: 520px;
+  box-shadow: 0 8px 24px rgba(11, 69, 217, 0.06);
+  border: 1px solid rgba(228, 234, 247, 0.5);
+}
+
+.register-success-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(36, 184, 169, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  font-size: 32px;
+  color: #24B8A9;
+  font-weight: 700;
+}
+
+.register-success-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #061B5B;
+  margin: 0 0 12px 0;
+}
+
+.register-success-text {
+  font-size: 17px;
+  color: #667399;
+  line-height: 1.6;
+  margin: 0 0 32px 0;
+}
+
+.register-success-cta {
+  background: #0B45D9;
+  color: white;
+  border: none;
+  padding: 14px 40px;
+  border-radius: 60px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 8px 24px rgba(11, 69, 217, 0.25);
+}
+
+.register-success-cta:hover {
+  background: #0A3DBF;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(11, 69, 217, 0.35);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .register-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .register-right {
+    order: -1;
+    min-height: 200px;
+  }
+
+  .register-illustration {
+    min-height: 200px;
+    max-width: 100%;
+  }
+
+  .register-illustration-card {
+    position: relative;
+    display: inline-flex;
+    margin: 4px;
+    padding: 14px 20px;
+  }
+
+  .register-illustration {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    min-height: auto;
+  }
+
+  .card-lab,
+  .card-products,
+  .card-promos,
+  .card-documents {
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    flex: 1 1 auto;
+    min-width: 140px;
+  }
+}
+
+@media (max-width: 768px) {
+  .register-page {
+    padding: 20px 16px 48px;
+  }
+
+  .register-left {
+    padding: 24px;
+  }
+
+  .register-title {
+    font-size: 26px;
+  }
+
+  .register-subtitle {
+    font-size: 15px;
+  }
+
+  .register-input {
+    height: 48px;
+    font-size: 15px;
+  }
+
+  .register-textarea {
+    font-size: 15px;
+  }
+
+  .register-submit {
+    padding: 14px 24px;
+    font-size: 15px;
+  }
+
+  .register-success-content {
+    padding: 40px 24px;
+  }
+
+  .register-success-title {
+    font-size: 24px;
+  }
+
+  .register-illustration-card {
+    padding: 12px 16px;
+    min-width: 100px;
+  }
+
+  .card-icon-img {
+    width: 22px;
+    height: 22px;
+  }
+
+  .card-label {
+    font-size: 14px;
+  }
+}
