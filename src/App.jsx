@@ -3,6 +3,7 @@ import Home from './routes/Home';
 import CreatePromotion from './routes/CreatePromotion';
 import LabPricing from './routes/LabPricing';
 import LabRegister from './routes/LabRegister';
+import Mentions from './routes/Mentions';
 
 export default function App() {
   const [page, setPage] = useState('home');
@@ -13,6 +14,8 @@ export default function App() {
       {page === 'create' && <CreatePromotion setPage={setPage} />}
       {page === 'pricing' && <LabPricing setPage={setPage} />}
       {page === 'lab-register' && <LabRegister setPage={setPage} />}
+      {page === 'mentions' && <Mentions setPage={setPage} />}
+
     </>
   );
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import './Footer.css';
 import logo from '../assets/logo1.png';
 
-export default function Footer() {
+export default function Footer({ setPage }) {
   return (
     <footer className="footer">
       <div className="footer-container">
@@ -18,9 +18,9 @@ export default function Footer() {
             <div className="footer-column">
               <h4 className="footer-column-title">Navigation</h4>
               <ul className="footer-list">
-                <li><a href="#">Promotions</a></li>
-                <li><a href="#">Laboratoires</a></li>
-                <li><a href="#">Comment ça marche</a></li>
+                <li><a href="#promotions">Promotions</a></li>
+                <li><a href="#laboratoires">Laboratoires</a></li>
+                <li><a href="#comment-ca-marche">Comment ça marche</a></li>
               </ul>
             </div>
 
@@ -35,9 +35,15 @@ export default function Footer() {
             <div className="footer-column">
               <h4 className="footer-column-title">Légal</h4>
               <ul className="footer-list">
-                <li><a href="#">Mentions légales</a></li>
-                <li><a href="#">Politique de confidentialité</a></li>
-                <li><a href="#">CGU</a></li>
+                <li>
+                  <button
+                    type="button"
+                    className="footer-link"
+                    onClick={() => setPage('mentions')}
+                  >
+                    Mentions légales
+                  </button>
+                </li>
               </ul>
             </div>
           </div>

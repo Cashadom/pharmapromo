@@ -50,7 +50,7 @@ export default function Home({ setPage }) {
 
       <LabBlock setPage={setPage} />
 
-      <Footer />
+      <Footer setPage={setPage} />
     </>
   );
 }

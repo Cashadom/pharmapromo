@@ -1,0 +1,151 @@
+.mentions-page {
+  min-height: 100vh;
+  background: #F7FAFF;
+  padding: 40px 24px 80px;
+}
+
+.mentions-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.mentions-back {
+  background: none;
+  border: none;
+  color: #667399;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 0;
+  margin-bottom: 24px;
+  transition: color 0.2s ease, transform 0.2s ease;
+  font-family: inherit;
+}
+
+.mentions-back:hover {
+  color: #0B45D9;
+  transform: translateX(-2px);
+}
+
+.mentions-header {
+  margin-bottom: 32px;
+}
+
+.mentions-title {
+  font-size: 40px;
+  font-weight: 700;
+  color: #061B5B;
+  margin: 0 0 8px 0;
+  line-height: 1.15;
+}
+
+.mentions-subtitle {
+  font-size: 18px;
+  color: #667399;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.mentions-card {
+  background: white;
+  border-radius: 24px;
+  padding: 48px 56px;
+  box-shadow: 0 8px 24px rgba(11, 69, 217, 0.06);
+  border: 1px solid rgba(228, 234, 247, 0.5);
+}
+
+.mentions-section {
+  padding: 24px 0;
+  border-bottom: 1px solid #EEF2FB;
+}
+
+.mentions-section-last {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.mentions-section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #061B5B;
+  margin: 0 0 12px 0;
+}
+
+.mentions-text {
+  font-size: 15px;
+  color: #667399;
+  line-height: 1.8;
+  margin: 0 0 8px 0;
+}
+
+.mentions-text:last-child {
+  margin-bottom: 0;
+}
+
+.mentions-text strong {
+  color: #07194A;
+  font-weight: 600;
+}
+
+.mentions-text br {
+  display: block;
+  content: '';
+  margin: 4px 0;
+}
+
+.mentions-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px 0;
+}
+
+.mentions-list li {
+  font-size: 15px;
+  color: #667399;
+  line-height: 1.8;
+  padding: 2px 0 2px 20px;
+  position: relative;
+}
+
+.mentions-list li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #24B8A9;
+  font-weight: 700;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .mentions-page {
+    padding: 24px 16px 48px;
+  }
+
+  .mentions-title {
+    font-size: 28px;
+  }
+
+  .mentions-subtitle {
+    font-size: 16px;
+  }
+
+  .mentions-card {
+    padding: 24px 20px;
+  }
+
+  .mentions-section {
+    padding: 18px 0;
+  }
+
+  .mentions-section-title {
+    font-size: 16px;
+  }
+
+  .mentions-text {
+    font-size: 14px;
+  }
+
+  .mentions-list li {
+    font-size: 14px;
+  }
+}
