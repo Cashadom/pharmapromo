@@ -177,17 +177,6 @@ export default function PromoHighlights({ promos, loading }) {
             );
           })}
         </div>
-
-        <div className="highlights-footer">
-          <button 
-            className="highlights-cta"
-            onClick={() => {
-              document.getElementById('promo-directory')?.scrollIntoView({ behavior: 'smooth' });
-            }}
-          >
-            Voir toutes les promotions
-          </button>
-        </div>
       </div>
     </section>
   );

@@ -47,7 +47,6 @@ function parseDescriptionFields(description) {
 function isExpiringSoon(dateFin) {
   if (!dateFin) return false;
   
-  // Tenter de parser la date au format DD/MM/YYYY
   const parts = dateFin.split('/');
   if (parts.length !== 3) return false;
   
@@ -64,62 +63,24 @@ function isExpiringSoon(dateFin) {
   const diffTime = endDate - today;
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   
-  // Si l'offre se termine dans les 7 jours et est encore valide
   return diffDays >= 0 && diffDays <= 7;
 }
 
-export default function PromoDirectory({ promos, loading }) {
-  const [activeFilter, setActiveFilter] = useState('ALL');
-
-  const filterOptions = [
-    { value: 'ALL', label: 'Tous' },
-    { value: 'PERCENT', label: '%' },
-    { value: 'FREE_ITEM', label: 'Offert' },
-    { value: 'REORDER', label: 'Réassort' },
-    { value: 'ORDER_THRESHOLD', label: 'Montant minimum' }
-  ];
-
-  const getBadgeColor = (type) => {
-    switch (type) {
-      case 'PERCENT':
-        return 'badge-percent';
-      case 'FREE_ITEM':
-        return 'badge-free';
-      case 'REORDER':
-        return 'badge-reorder';
-      case 'ORDER_THRESHOLD':
-        return 'badge-threshold';
-      default:
-        return 'badge-default';
-    }
-  };
-
-  const getBadgeLabel = (type) => {
-    switch (type) {
-      case 'PERCENT':
-        return '%';
-      case 'FREE_ITEM':
-        return 'Offert';
-      case 'REORDER':
-        return 'Réassort';
-      case 'ORDER_THRESHOLD':
-        return 'Montant min.';
-      default:
-        return '';
-    }
-  };
-
-  const filteredPromos = activeFilter === 'ALL'
-    ? promos
-    : promos.filter(promo => promo.type_promo === activeFilter);
+export default function PromoDirectory({ promos, loading, setPage }) {
+  // Plus de filtres - on affiche simplement les 10 dernières promos
+  const displayPromos = promos.slice(0, 10);
 
   if (loading) {
     return (
       <section id="promo-directory" className="directory">
         <div className="directory-container">
           <div className="directory-header">
-            <h2 className="directory-title">Toutes les promotions actives</h2>
-            <p className="directory-subtitle">Retrouvez toutes les offres laboratoires actuellement disponibles.</p>
+            <button 
+              className="see-all-offers-btn-header"
+              onClick={() => setPage('offres')}
+            >
+              Voir toutes les offres →
+            </button>
           </div>
           <div className="directory-list">
             <div className="directory-list-head" aria-hidden="true">
@@ -131,7 +92,7 @@ export default function PromoDirectory({ promos, loading }) {
               <span></span>
             </div>
             <div className="directory-rows">
-              {[1, 2, 3, 4, 5, 6].map((n) => (
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
                 <div key={n} className="promo-row skeleton">
                   <div className="row-cell row-cell-main">
                     <div className="skeleton-bar skeleton-title-bar"></div>
@@ -165,23 +126,15 @@ export default function PromoDirectory({ promos, loading }) {
     <section id="promo-directory" className="directory">
       <div className="directory-container">
         <div className="directory-header">
-          <h2 className="directory-title">Toutes les promotions actives</h2>
-          <p className="directory-subtitle">Retrouvez toutes les offres laboratoires actuellement disponibles.</p>
+          <button 
+            className="see-all-offers-btn-header"
+            onClick={() => setPage('offres')}
+          >
+            Voir toutes les offres →
+          </button>
         </div>
 
-        <div className="directory-filters">
-          {filterOptions.map((filter) => (
-            <button
-              key={filter.value}
-              className={`filter-btn ${activeFilter === filter.value ? 'filter-active' : ''}`}
-              onClick={() => setActiveFilter(filter.value)}
-            >
-              {filter.label}
-            </button>
-          ))}
-        </div>
-
-        {filteredPromos.length === 0 ? (
+        {displayPromos.length === 0 ? (
           <div className="directory-empty">
             <div className="empty-card">
               <p>Aucune promotion active actuellement.</p>
@@ -199,7 +152,7 @@ export default function PromoDirectory({ promos, loading }) {
             </div>
 
             <div className="directory-rows" role="list">
-              {filteredPromos.map((promo) => {
+              {displayPromos.map((promo) => {
                 const fields = parseDescriptionFields(promo.description);
                 const expiringSoon = isExpiringSoon(fields.dateFin);
 
@@ -262,4 +215,35 @@ export default function PromoDirectory({ promos, loading }) {
       </div>
     </section>
   );
+}
+
+// Fonctions getBadgeColor et getBadgeLabel en dehors du composant
+function getBadgeColor(type) {
+  switch (type) {
+    case 'PERCENT':
+      return 'badge-percent';
+    case 'FREE_ITEM':
+      return 'badge-free';
+    case 'REORDER':
+      return 'badge-reorder';
+    case 'ORDER_THRESHOLD':
+      return 'badge-threshold';
+    default:
+      return 'badge-default';
+  }
+}
+
+function getBadgeLabel(type) {
+  switch (type) {
+    case 'PERCENT':
+      return '%';
+    case 'FREE_ITEM':
+      return 'Offert';
+    case 'REORDER':
+      return 'Réassort';
+    case 'ORDER_THRESHOLD':
+      return 'Montant min.';
+    default:
+      return '';
+  }
 }

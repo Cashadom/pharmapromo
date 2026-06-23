@@ -20,7 +20,9 @@ export default function Home({ setPage }) {
     const { data, error } = await supabase
       .from('promotions')
       .select('*')
-      .order('created_at', { ascending: false });
+      .eq('active', true)
+      .order('created_at', { ascending: false })
+      .limit(20);
 
     if (error) {
       console.error(error);
@@ -46,6 +48,7 @@ export default function Home({ setPage }) {
       <PromoDirectory
         promos={promos}
         loading={loading}
+        setPage={setPage}
       />
 
       <LabBlock setPage={setPage} />

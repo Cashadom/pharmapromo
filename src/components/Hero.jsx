@@ -22,27 +22,12 @@ export default function Hero({ setPage }) {
           <h1>
             Toutes les promotions laboratoires,
             <br />
-            <span className="gradient-text">enfin au même endroit.</span>
+            <span className="gradient-text handwriting">enfin au même endroit.</span>
           </h1>
           
           <p className="hero-description">
-            Consultez gratuitement les offres actives des laboratoires, sans chercher dans vos emails.
+            Gagnez du temps et améliorez votre marge en consultant gratuitement les dernières offres à destination des officines, sans chercher dans vos emails, puis contactez directement les laboratoires.
           </p>
-          
-          <div className="hero-actions">
-            <button 
-              className="btn-primary"
-              onClick={() => setPage('home')}
-            >
-              Voir les promotions
-            </button>
-            <button 
-              className="btn-secondary"
-              onClick={() => setPage('create')}
-            >
-              Publier une promotion
-            </button>
-          </div>
           
           <div className="hero-proofs">
             <div className="proof-item">
@@ -71,6 +56,9 @@ export default function Hero({ setPage }) {
       </div>
       
       <style jsx>{`
+        /* ---- Import Google Font pour le style handwriting moderne ---- */
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap');
+
         .hero {
           padding: 80px 24px;
           background: #F7FAFF;
@@ -244,63 +232,27 @@ export default function Hero({ setPage }) {
           font-weight: 700;
         }
         
-        .gradient-text {
-          background: linear-gradient(135deg, #24B8A9 0%, #FF5F8F 100%);
+        /* Style handwriting moderne pour "enfin au même endroit" */
+        .handwriting {
+          font-family: 'Caveat', cursive;
+          font-weight: 700;
+          font-size: 56px;
+          letter-spacing: -0.01em;
+          background: linear-gradient(135deg, #24B8A9 0%, #0B45D9 50%, #FF5F8F 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
+          display: inline-block;
+          line-height: 1.15;
+          margin-top: 4px;
         }
         
         .hero-description {
-          font-size: 20px;
-          line-height: 1.6;
+          font-size: 18px;
+          line-height: 1.7;
           color: #667399;
           margin: 0;
-          max-width: 480px;
-        }
-        
-        .hero-actions {
-          display: flex;
-          gap: 16px;
-          flex-wrap: wrap;
-          margin-top: 8px;
-        }
-        
-        .btn-primary {
-          background: #0B45D9;
-          color: white;
-          border: none;
-          padding: 16px 36px;
-          border-radius: 60px;
-          font-size: 16px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          box-shadow: 0 8px 24px rgba(11, 69, 217, 0.25);
-        }
-        
-        .btn-primary:hover {
-          background: #0A3DBF;
-          transform: translateY(-2px);
-          box-shadow: 0 12px 32px rgba(11, 69, 217, 0.35);
-        }
-        
-        .btn-secondary {
-          background: white;
-          color: #061B5B;
-          border: 2px solid #E4EAF7;
-          padding: 14px 36px;
-          border-radius: 60px;
-          font-size: 16px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-        
-        .btn-secondary:hover {
-          border-color: #0B45D9;
-          background: #F7FAFF;
-          transform: translateY(-2px);
+          max-width: 700px;
         }
         
         .hero-proofs {
@@ -367,9 +319,13 @@ export default function Hero({ setPage }) {
           h1 {
             font-size: 42px;
           }
+
+          .handwriting {
+            font-size: 46px;
+          }
           
           .hero-description {
-            font-size: 18px;
+            font-size: 17px;
           }
           
           .hero-image {
@@ -420,21 +376,14 @@ export default function Hero({ setPage }) {
           h1 {
             font-size: 32px;
           }
+
+          .handwriting {
+            font-size: 34px;
+          }
           
           .hero-description {
             font-size: 16px;
-          }
-          
-          .hero-actions {
-            flex-direction: column;
-            width: 100%;
-          }
-          
-          .btn-primary,
-          .btn-secondary {
-            width: 100%;
-            text-align: center;
-            padding: 16px 24px;
+            line-height: 1.6;
           }
           
           .hero-proofs {
