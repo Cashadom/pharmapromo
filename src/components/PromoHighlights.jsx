@@ -40,8 +40,6 @@ export default function PromoHighlights({ promos, loading }) {
     }
   };
 
-  // Extraction générique d'un champ "Label : valeur" depuis la description.
-  // Robuste : renvoie null si absent, ne casse jamais l'affichage.
   const extractField = (description, label) => {
     if (!description) return null;
     const regex = new RegExp(`${label}\\s*:\\s*([^|]+)`, 'i');
@@ -55,16 +53,19 @@ export default function PromoHighlights({ promos, loading }) {
     return match ? match[1] : null;
   };
 
+  // Récupérer le nombre de promotions (max 6)
+  const displayPromos = promos.slice(0, 6);
+
   if (loading) {
     return (
       <section className="highlights">
         <div className="highlights-container">
           <div className="highlights-header">
-            <h2 className="highlights-title">Promotions à la une</h2>
+            <h2 className="highlights-title">A saisir en ce moment</h2>
             <p className="highlights-subtitle">Les dernières offres publiées par les laboratoires.</p>
           </div>
           <div className="highlights-grid">
-            {[1, 2, 3].map((n) => (
+            {[1, 2, 3, 4, 5, 6].map((n) => (
               <div key={n} className="highlight-card skeleton">
                 <div className="skeleton-image"></div>
                 <div className="skeleton-offer"></div>
@@ -85,7 +86,7 @@ export default function PromoHighlights({ promos, loading }) {
       <section className="highlights">
         <div className="highlights-container">
           <div className="highlights-header">
-            <h2 className="highlights-title">Promotions à la une</h2>
+            <h2 className="highlights-title">A saisir en ce moment</h2>
             <p className="highlights-subtitle">Les dernières offres publiées par les laboratoires.</p>
           </div>
           <div className="highlights-empty">
@@ -102,34 +103,28 @@ export default function PromoHighlights({ promos, loading }) {
     <section className="highlights">
       <div className="highlights-container">
         <div className="highlights-header">
-          <h2 className="highlights-title">Promotions à la une</h2>
+          <h2 className="highlights-title">A saisir en ce moment</h2>
           <p className="highlights-subtitle">Les dernières offres publiées par les laboratoires.</p>
         </div>
 
         <div className="highlights-grid">
-          {promos.map((promo, index) => {
+          {displayPromos.map((promo) => {
             const dateFin = extractDateFin(promo.description);
             const offre = extractField(promo.description, 'Offre');
             const csp = extractField(promo.description, 'CSP');
             const condition = extractField(promo.description, 'Condition');
             const franco = extractField(promo.description, 'Franco');
-            const isFeatured = index === 0;
 
             const hasDetails = csp || condition || franco;
 
             return (
-              <div key={promo.id} className={`highlight-card ${isFeatured ? 'card-featured' : ''}`}>
-                {isFeatured && (
-                  <div className="card-featured-badge">À la une</div>
-                )}
-
+              <div key={promo.id} className="highlight-card">
                 {promo.image_url && (
                   <div className="highlight-image">
                     <img src={promo.image_url} alt={promo.titre} />
                   </div>
                 )}
 
-                {/* Accroche principale : ce que le pharmacien cherche en premier */}
                 <div className={`highlight-offer-banner ${getBadgeColor(promo.type_promo)}`}>
                   <span className="offer-banner-type">{getBadgeLabel(promo.type_promo)}</span>
                   <span className="offer-banner-value">{offre || promo.titre}</span>
@@ -174,7 +169,7 @@ export default function PromoHighlights({ promos, loading }) {
                   )}
                 </div>
 
-                <a href="#" className="highlight-link">
+                <a href="#promo-directory" className="highlight-link">
                   <span>Voir la promotion</span>
                   <span className="link-arrow" aria-hidden="true">→</span>
                 </a>
@@ -184,7 +179,14 @@ export default function PromoHighlights({ promos, loading }) {
         </div>
 
         <div className="highlights-footer">
-          <button className="highlights-cta">Voir toutes les promotions</button>
+          <button 
+            className="highlights-cta"
+            onClick={() => {
+              document.getElementById('promo-directory')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+          >
+            Voir toutes les promotions
+          </button>
         </div>
       </div>
     </section>

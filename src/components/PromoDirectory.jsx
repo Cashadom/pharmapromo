@@ -43,6 +43,31 @@ function parseDescriptionFields(description) {
   return result;
 }
 
+// Fonction pour vérifier si une offre est proche de la date de fin (dans les 7 jours)
+function isExpiringSoon(dateFin) {
+  if (!dateFin) return false;
+  
+  // Tenter de parser la date au format DD/MM/YYYY
+  const parts = dateFin.split('/');
+  if (parts.length !== 3) return false;
+  
+  const day = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10) - 1;
+  const year = parseInt(parts[2], 10);
+  
+  if (isNaN(day) || isNaN(month) || isNaN(year)) return false;
+  
+  const endDate = new Date(year, month, day);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const diffTime = endDate - today;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  // Si l'offre se termine dans les 7 jours et est encore valide
+  return diffDays >= 0 && diffDays <= 7;
+}
+
 export default function PromoDirectory({ promos, loading }) {
   const [activeFilter, setActiveFilter] = useState('ALL');
 
@@ -90,7 +115,7 @@ export default function PromoDirectory({ promos, loading }) {
 
   if (loading) {
     return (
-      <section className="directory">
+      <section id="promo-directory" className="directory">
         <div className="directory-container">
           <div className="directory-header">
             <h2 className="directory-title">Toutes les promotions actives</h2>
@@ -137,7 +162,7 @@ export default function PromoDirectory({ promos, loading }) {
   }
 
   return (
-    <section className="directory">
+    <section id="promo-directory" className="directory">
       <div className="directory-container">
         <div className="directory-header">
           <h2 className="directory-title">Toutes les promotions actives</h2>
@@ -176,6 +201,7 @@ export default function PromoDirectory({ promos, loading }) {
             <div className="directory-rows" role="list">
               {filteredPromos.map((promo) => {
                 const fields = parseDescriptionFields(promo.description);
+                const expiringSoon = isExpiringSoon(fields.dateFin);
 
                 const metaParts = [
                   fields.csp && `CSP : ${fields.csp}`,
@@ -185,7 +211,13 @@ export default function PromoDirectory({ promos, loading }) {
                 const metaLine = metaParts.length ? metaParts.join(' · ') : null;
 
                 return (
-                  <div key={promo.id} className="promo-row" role="listitem">
+                  <div key={promo.id} className={`promo-row ${expiringSoon ? 'expiring-soon' : ''}`} role="listitem">
+                    {expiringSoon && (
+                      <div className="expiring-badge">
+                        <span className="expiring-dot"></span>
+                        Se termine bientôt
+                      </div>
+                    )}
                     <div className="row-cell row-cell-main">
                       <h3 className="row-title">{promo.titre}</h3>
                       <div className="row-product">
@@ -210,7 +242,9 @@ export default function PromoDirectory({ promos, loading }) {
                     </div>
 
                     <div className="row-cell" data-label="Date fin">
-                      <span className="row-date">{fields.dateFin || '—'}</span>
+                      <span className={`row-date ${expiringSoon ? 'date-expiring' : ''}`}>
+                        {fields.dateFin || '—'}
+                      </span>
                     </div>
 
                     <div className="row-cell row-cell-action">

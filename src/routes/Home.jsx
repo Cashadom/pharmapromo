@@ -39,7 +39,7 @@ export default function Home({ setPage }) {
       <Hero setPage={setPage} />
 
       <PromoHighlights
-        promos={promos.slice(0, 3)}
+        promos={promos.slice(0, 6)}
         loading={loading}
       />
 

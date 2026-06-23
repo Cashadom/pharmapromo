@@ -122,7 +122,9 @@
   flex-direction: column;
 }
 
+/* --- Promo row avec badge expirant --- */
 .promo-row {
+  position: relative;
   padding: 20px 28px;
   border-bottom: 1px solid #EEF2FB;
   transition: background-color 0.15s ease;
@@ -140,6 +142,58 @@
   background: #F7FAFF;
 }
 
+/* --- Badge "Se termine bientôt" --- */
+.expiring-badge {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 95, 143, 0.12);
+  color: #FF5F8F;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 100px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  animation: pulse-badge 2s ease-in-out infinite;
+  z-index: 2;
+}
+
+.expiring-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #FF5F8F;
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-badge {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(0.6);
+  }
+}
+
+/* --- Cellules --- */
 .row-cell {
   display: flex;
   flex-direction: column;
@@ -261,6 +315,11 @@
   font-size: 14px;
   font-weight: 500;
   color: #667399;
+}
+
+.row-date.date-expiring {
+  color: #FF5F8F;
+  font-weight: 700;
 }
 
 .row-cell-action {
@@ -398,6 +457,17 @@
 
   .row-cell-action {
     align-items: flex-start;
+  }
+
+  .expiring-badge {
+    position: relative;
+    top: 0;
+    right: 0;
+    margin-bottom: 6px;
+    display: inline-flex;
+    width: fit-content;
+    font-size: 10px;
+    padding: 3px 12px;
   }
 }
 

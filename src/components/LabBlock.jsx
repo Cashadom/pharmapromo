@@ -5,10 +5,16 @@ import icon2 from '../assets/icon2.png';
 import icon4 from '../assets/icon4.png';
 import icon5 from '../assets/icon5.png';
 import icon6 from '../assets/icon6.png';
+import pharmaBg from '../assets/pharma.png';
 
 export default function LabBlock({ setPage }) {
   return (
     <section className="lab-block">
+      {/* Image de fond pharma en opacité */}
+      <div className="lab-block-bg" aria-hidden="true">
+        <img src={pharmaBg} alt="" className="lab-bg-image" />
+      </div>
+
       <div className="lab-block-container">
         {/* Left content */}
         <div className="lab-block-left">
@@ -52,8 +58,8 @@ export default function LabBlock({ setPage }) {
             </div>
           </div>
           
-          <button className="lab-cta" onClick={() => setPage('create')}>
-            Publier une promotion
+          <button className="lab-cta" onClick={() => setPage('pricing')}>
+            Répertorier mon laboratoire
           </button>
         </div>
         

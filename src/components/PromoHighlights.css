@@ -54,37 +54,16 @@
   border-color: #E4EAF7;
 }
 
-.card-featured {
-  background: linear-gradient(145deg, #FFFFFF 0%, #F7FAFF 100%);
-  border-color: #0B45D9;
-  border-width: 2px;
-  position: relative;
-  overflow: hidden;
-}
-
-.card-featured::before {
+/* ---- Toutes les cartes ont maintenant le même style ---- */
+.highlight-card::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 4px;
+  border-radius: 24px 24px 0 0;
   background: linear-gradient(90deg, #0B45D9, #24B8A9, #FF5F8F);
-}
-
-.card-featured-badge {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  background: #0B45D9;
-  color: white;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 4px 14px;
-  border-radius: 100px;
-  z-index: 2;
 }
 
 /* Image du produit */
@@ -107,7 +86,7 @@
   transform: scale(1.03);
 }
 
-/* ---- Accroche principale : l'offre, en premier, en grand ---- */
+/* ---- Accroche principale ---- */
 .highlight-offer-banner {
   display: flex;
   align-items: baseline;
@@ -138,6 +117,7 @@
   letter-spacing: -0.01em;
 }
 
+/* Couleurs des badges */
 .highlight-offer-banner.badge-percent {
   background: rgba(11, 69, 217, 0.06);
 }
@@ -194,7 +174,7 @@
   background: #EEF2FB;
 }
 
-/* Produit : repère secondaire juste après l'offre */
+/* Produit */
 .highlight-product-name {
   font-size: 18px;
   font-weight: 700;
@@ -222,7 +202,7 @@
   color: #061B5B;
 }
 
-/* Détails techniques : mini-lignes au lieu d'un pavé */
+/* Détails */
 .highlight-details {
   display: flex;
   flex-direction: column;
@@ -252,7 +232,7 @@
   text-align: right;
 }
 
-/* Laboratoire + famille : en bas, secondaire */
+/* Footer meta */
 .highlight-footer-meta {
   display: flex;
   align-items: center;
@@ -302,13 +282,6 @@
 
 .highlight-link:hover .link-arrow {
   transform: translateX(4px);
-}
-
-.highlight-link:focus-visible,
-.highlights-cta:focus-visible {
-  outline: 2px solid #0B45D9;
-  outline-offset: 3px;
-  border-radius: 6px;
 }
 
 .highlights-footer {
