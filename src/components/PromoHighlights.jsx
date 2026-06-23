@@ -40,16 +40,19 @@ export default function PromoHighlights({ promos, loading }) {
     }
   };
 
-  const extractDateFin = (description) => {
+  // Extraction générique d'un champ "Label : valeur" depuis la description.
+  // Robuste : renvoie null si absent, ne casse jamais l'affichage.
+  const extractField = (description, label) => {
     if (!description) return null;
-    const match = description.match(/Fin : (\d{2}\/\d{2}\/\d{4})/);
-    return match ? match[1] : null;
+    const regex = new RegExp(`${label}\\s*:\\s*([^|]+)`, 'i');
+    const match = description.match(regex);
+    return match ? match[1].trim() : null;
   };
 
-  const extractOffre = (description) => {
+  const extractDateFin = (description) => {
     if (!description) return null;
-    const match = description.match(/Offre : ([^|]+)/);
-    return match ? match[1].trim() : null;
+    const match = description.match(/Fin\s*:\s*(\d{2}\/\d{2}\/\d{4})/i);
+    return match ? match[1] : null;
   };
 
   if (loading) {
@@ -64,9 +67,9 @@ export default function PromoHighlights({ promos, loading }) {
             {[1, 2, 3].map((n) => (
               <div key={n} className="highlight-card skeleton">
                 <div className="skeleton-image"></div>
-                <div className="skeleton-badge"></div>
+                <div className="skeleton-offer"></div>
                 <div className="skeleton-title"></div>
-                <div className="skeleton-product"></div>
+                <div className="skeleton-date"></div>
                 <div className="skeleton-description"></div>
                 <div className="skeleton-link"></div>
               </div>
@@ -106,57 +109,74 @@ export default function PromoHighlights({ promos, loading }) {
         <div className="highlights-grid">
           {promos.map((promo, index) => {
             const dateFin = extractDateFin(promo.description);
-            const offre = extractOffre(promo.description);
+            const offre = extractField(promo.description, 'Offre');
+            const csp = extractField(promo.description, 'CSP');
+            const condition = extractField(promo.description, 'Condition');
+            const franco = extractField(promo.description, 'Franco');
             const isFeatured = index === 0;
+
+            const hasDetails = csp || condition || franco;
 
             return (
               <div key={promo.id} className={`highlight-card ${isFeatured ? 'card-featured' : ''}`}>
                 {isFeatured && (
                   <div className="card-featured-badge">À la une</div>
                 )}
-                
+
                 {promo.image_url && (
                   <div className="highlight-image">
                     <img src={promo.image_url} alt={promo.titre} />
                   </div>
                 )}
-                
-                <div className="highlight-badges">
-                  <div className={`highlight-badge ${getBadgeColor(promo.type_promo)}`}>
-                    {getBadgeLabel(promo.type_promo)}
-                  </div>
-                  {promo.famille && (
-                    <div className="highlight-badge highlight-badge-famille">
-                      {promo.famille}
-                    </div>
-                  )}
+
+                {/* Accroche principale : ce que le pharmacien cherche en premier */}
+                <div className={`highlight-offer-banner ${getBadgeColor(promo.type_promo)}`}>
+                  <span className="offer-banner-type">{getBadgeLabel(promo.type_promo)}</span>
+                  <span className="offer-banner-value">{offre || promo.titre}</span>
                 </div>
-                
-                <h3 className="highlight-title">{promo.titre}</h3>
-                
-                <div className="highlight-product">
-                  <span className="product-label">Produit</span>
-                  <span className="product-name">{promo.produit}</span>
-                </div>
-                
-                {offre && (
-                  <div className="highlight-offer">
-                    <span className="offer-label">Offre</span>
-                    <span className="offer-value">{offre}</span>
-                  </div>
-                )}
-                
+
+                <h3 className="highlight-product-name">{promo.produit}</h3>
+
                 {dateFin && (
                   <div className="highlight-date">
-                    <span className="date-label">Valable jusqu'au</span>
+                    <span className="date-label">Jusqu'au</span>
                     <span className="date-value">{dateFin}</span>
                   </div>
                 )}
-                
-                <p className="highlight-description">{promo.description}</p>
-                
+
+                {hasDetails && (
+                  <div className="highlight-details">
+                    {condition && (
+                      <div className="detail-line">
+                        <span className="detail-label">Condition</span>
+                        <span className="detail-value">{condition}</span>
+                      </div>
+                    )}
+                    {franco && (
+                      <div className="detail-line">
+                        <span className="detail-label">Franco</span>
+                        <span className="detail-value">{franco}</span>
+                      </div>
+                    )}
+                    {csp && (
+                      <div className="detail-line">
+                        <span className="detail-label">CSP</span>
+                        <span className="detail-value">{csp}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="highlight-footer-meta">
+                  <span className="highlight-lab">{promo.titre}</span>
+                  {promo.famille && (
+                    <span className="highlight-famille">{promo.famille}</span>
+                  )}
+                </div>
+
                 <a href="#" className="highlight-link">
-                  Voir la promotion →
+                  <span>Voir la promotion</span>
+                  <span className="link-arrow" aria-hidden="true">→</span>
                 </a>
               </div>
             );

@@ -252,8 +252,7 @@
 
 .form-input,
 .form-select,
-.form-textarea,
-.form-input-file {
+.form-textarea {
   width: 100%;
   padding: 14px 16px;
   border-radius: 14px;
@@ -274,8 +273,7 @@
 
 .form-input:focus,
 .form-select:focus,
-.form-textarea:focus,
-.form-input-file:focus {
+.form-textarea:focus {
   background: white;
   border-color: #0B45D9;
   box-shadow: 0 0 0 4px rgba(11, 69, 217, 0.10);
@@ -285,20 +283,55 @@
   height: 52px;
 }
 
+/* ---- Upload de fichier moderne ---- */
 .form-input-file {
-  padding: 12px 16px;
-  border: 2px dashed #E4EAF7;
+  width: 100%;
+  padding: 24px;
+  border: 2px dashed #24B8A9;
+  border-radius: 20px;
   background: #F7FAFF;
   cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  color: #667399;
+  font-size: 14px;
+  text-align: center;
 }
 
 .form-input-file:hover {
   border-color: #0B45D9;
+  background: #F0F5FF;
 }
 
 .form-input-file:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.form-input-file::before {
+  content: '📷';
+  display: block;
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.form-input-file::file-selector-button {
+  background: linear-gradient(135deg, #5EEAC4, #24B8A9);
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 18px rgba(36, 184, 169, 0.25);
+  margin-top: 8px;
+}
+
+.form-input-file::file-selector-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(36, 184, 169, 0.35);
 }
 
 .form-input-with-suffix {
@@ -363,6 +396,26 @@
   border: 1px solid #E4EAF7;
 }
 
+/* ---- Info box pour les modes de visibilité ---- */
+.form-info-box {
+  background: #F7FAFF;
+  border: 1px solid #E4EAF7;
+  border-radius: 14px;
+  padding: 16px 20px;
+}
+
+.form-info-text {
+  font-size: 14px;
+  color: #667399;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.form-info-text + .form-info-text {
+  margin-top: 4px;
+}
+
+/* ---- Bouton submit ---- */
 .form-submit {
   background: #0B45D9;
   color: white;
@@ -487,6 +540,18 @@
   object-fit: cover;
 }
 
+/* Informations du laboratoire dans l'aperçu */
+.preview-lab-info {
+  margin-bottom: 12px;
+  padding: 8px 0 4px 0;
+}
+
+.preview-lab-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #061B5B;
+}
+
 .preview-badge-wrapper {
   display: flex;
   gap: 8px;
@@ -505,12 +570,14 @@
   border: 1px solid transparent;
 }
 
+/* Badge famille */
 .preview-badge-famille {
   background: rgba(102, 115, 153, 0.10);
   color: #667399;
   border-color: rgba(102, 115, 153, 0.20);
 }
 
+/* Badges type de promotion */
 .badge-percent {
   background: rgba(11, 69, 217, 0.10);
   color: #0B45D9;
@@ -612,6 +679,48 @@
   margin: 0;
 }
 
+/* Bloc contact dans l'aperçu */
+.preview-block-contact {
+  background: #F7FAFF;
+  border-radius: 12px;
+  padding: 12px 14px !important;
+  margin-top: 4px;
+  border-bottom: none !important;
+}
+
+.preview-block-contact .preview-label {
+  color: #667399;
+}
+
+.preview-block-contact .preview-description {
+  font-weight: 500;
+}
+
+/* Bouton contact dégradé bicolore dans l'aperçu */
+.preview-contact-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #0B45D9, #24B8A9);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 60px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  width: 100%;
+  margin-top: 8px;
+  box-shadow: 0 6px 20px rgba(11, 69, 217, 0.25);
+}
+
+.preview-contact-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(11, 69, 217, 0.35);
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .create-container {
@@ -684,10 +793,23 @@
   }
 
   .form-input,
-  .form-select,
-  .form-input-file {
+  .form-select {
     height: 48px;
     font-size: 15px;
+  }
+
+  .form-input-file {
+    padding: 18px;
+    font-size: 13px;
+  }
+
+  .form-input-file::before {
+    font-size: 24px;
+  }
+
+  .form-input-file::file-selector-button {
+    padding: 8px 18px;
+    font-size: 12px;
   }
 
   .form-textarea {
@@ -706,6 +828,15 @@
 
   .preview-image img {
     height: 150px;
+  }
+
+  .preview-lab-name {
+    font-size: 16px;
+  }
+
+  .preview-contact-btn {
+    padding: 10px 20px;
+    font-size: 14px;
   }
 
   .blob-1 {

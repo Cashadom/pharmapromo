@@ -17,19 +17,20 @@ export default function CreatePromotion({ setPage }) {
     date_debut: '',
     date_fin: '',
     famille: '',
-    image_url: ''
+    image_url: '',
+    visibility_mode: 'SEMI_PRIVATE'
   });
 
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [laboStatus, setLaboStatus] = useState(null); // null = chargement, 'ok', 'no_labo', 'expired'
+  const [laboStatus, setLaboStatus] = useState(null);
   const [laboId, setLaboId] = useState(null);
+  const [laboData, setLaboData] = useState(null);
   const [promoCount, setPromoCount] = useState(0);
 
   useEffect(() => {
     async function checkLabo() {
-      // Récupérer le premier laboratoire (MVP simple)
       const { data, error } = await supabase
         .from('laboratoires')
         .select('*')
@@ -42,15 +43,13 @@ export default function CreatePromotion({ setPage }) {
       }
 
       setLaboId(data.id);
+      setLaboData(data);
 
-      // Vérifier le statut
-      // trial = autorisé, active = autorisé, expired = bloqué
       if (data.statut === 'expired') {
         setLaboStatus('expired');
         return;
       }
 
-      // Compter les promotions actives
       const { count } = await supabase
         .from('promotions')
         .select('*', { count: 'exact', head: true })
@@ -73,11 +72,15 @@ export default function CreatePromotion({ setPage }) {
 
   const conditionOptions = [
     { value: 'ALL', label: 'Toutes les officines' },
-    { value: 'REORDER', label: 'Commande de réassort (clients existants)' },
-    { value: 'IMPLANTATION', label: 'Commande d\'implantation (nouveaux clients)' }
+    { value: 'REORDER', label: 'Commande de réassort' },
+    { value: 'IMPLANTATION', label: 'Commande d\'implantation' }
   ];
 
-  // Structure hiérarchique des familles
+  const visibilityOptions = [
+    { value: 'PUBLIC', label: 'Publique - conditions visibles' },
+    { value: 'SEMI_PRIVATE', label: 'Semi-privée - conditions sur demande' }
+  ];
+
   const familleOptions = [
     // === DERMOCOSMETIQUE ===
     { value: 'DERMOCOSMETIQUE', label: '━ Dermocosmétique', isCategory: true },
@@ -105,9 +108,9 @@ export default function CreatePromotion({ setPage }) {
     { value: 'FOIE', label: '  └ Foie' },
     { value: 'MINCEUR', label: '  └ Minceur' },
     { value: 'BEAUTE_PEAU_CHEVEUX_ONGLES', label: '  └ Beauté peau cheveux ongles' },
-    { value: 'GROSSESSE_COMPLEMENTS', label: '  └ Grossesse' },
-    { value: 'ENFANTS_COMPLEMENTS', label: '  └ Enfants' },
-    { value: 'SENIORS_COMPLEMENTS', label: '  └ Seniors' },
+    { value: 'GROSSESSE', label: '  └ Grossesse' },
+    { value: 'ENFANTS', label: '  └ Enfants' },
+    { value: 'SENIORS', label: '  └ Seniors' },
     { value: 'SPORT', label: '  └ Sport' },
     { value: 'MICRONUTRITION', label: '  └ Micronutrition' },
     { value: 'VITAMINES', label: '  └ Vitamines' },
@@ -122,7 +125,7 @@ export default function CreatePromotion({ setPage }) {
     { value: 'MENOPAUSE', label: '  └ Ménopause' },
     { value: 'SECHERESSE_INTIME', label: '  └ Sécheresse intime' },
     { value: 'CONFORT_URINAIRE', label: '  └ Confort urinaire' },
-    { value: 'FERTILITE_FEMININE', label: '  └ Fertilité' },
+    { value: 'FERTILITE_FEMININE', label: '  └ Fertilité féminine' },
     { value: 'CYCLE_MENSTRUEL', label: '  └ Cycle menstruel' },
     
     // === SANTE MASCULINE ===
@@ -289,28 +292,18 @@ export default function CreatePromotion({ setPage }) {
     
     // === TEXTILE ===
     { value: 'TEXTILE', label: '━ Textile', isCategory: true },
-    { value: 'COMPRESSION_Textile', label: '  └ Compression' },
+    { value: 'COMPRESSION_TEXTILE', label: '  └ Compression' },
     { value: 'CONTENTION', label: '  └ Contention' },
     { value: 'ORTHOPEDIE_TEXTILE', label: '  └ Orthopédie' },
     { value: 'BIEN_ETRE_TEXTILE', label: '  └ Bien-être' },
     { value: 'SPORT_TEXTILE', label: '  └ Sport' },
     
-    // === FORMATION ===
-    { value: 'FORMATION', label: '━ Formation', isCategory: true },
-    { value: 'FORMATION_CONTINUE', label: '  └ Formation continue' },
-    { value: 'E_LEARNING', label: '  └ E-learning' },
-    { value: 'ATELIERS_PRATIQUES', label: '  └ Ateliers pratiques' },
-    { value: 'CONFERENCES', label: '  └ Conférences' },
-    { value: 'CERTIFICATION', label: '  └ Certification' },
-    
     // === SERVICES ===
     { value: 'SERVICES', label: '━ Services', isCategory: true },
-    { value: 'CONSULTING', label: '  └ Consulting' },
-    { value: 'AUDIT', label: '  └ Audit' },
-    { value: 'ACCOMPAGNEMENT', label: '  └ Merchandising' },
-    { value: 'MAINTENANCE', label: '  └ Logiciel' },
-    { value: 'LOCATION', label: '  └ Location' },
-    { value: 'SERVICE_APRES_VENTE', label: '  └ Service après-vente' },
+    { value: 'LOGICIELS', label: '  └ Logiciels' },
+    { value: 'FORMATION_SERVICES', label: '  └ Formation' },
+    { value: 'MERCHANDISING', label: '  └ Merchandising' },
+    { value: 'ACCOMPAGNEMENT', label: '  └ Accompagnement' },
     
     // === AUTRE ===
     { value: 'AUTRE', label: '━ Autre', isCategory: true }
@@ -430,10 +423,6 @@ export default function CreatePromotion({ setPage }) {
   }
 
   function validateForm() {
-    if (!form.titre.trim()) {
-      alert('Veuillez saisir un titre');
-      return false;
-    }
     if (!form.produit.trim()) {
       alert('Veuillez saisir un produit');
       return false;
@@ -444,26 +433,6 @@ export default function CreatePromotion({ setPage }) {
     }
     if (!form.famille) {
       alert('Veuillez sélectionner une famille de produit');
-      return false;
-    }
-    if (!form.description.trim()) {
-      alert('Veuillez saisir une description');
-      return false;
-    }
-    if (form.type_promo === 'PERCENT' && !form.remise_valeur) {
-      alert('Veuillez saisir le pourcentage de remise');
-      return false;
-    }
-    if (form.type_promo === 'FREE_ITEM' && !form.unite_offerte) {
-      alert('Veuillez saisir le nombre d\'unités offertes');
-      return false;
-    }
-    if (form.type_promo === 'ORDER_THRESHOLD' && !form.montant_minimum) {
-      alert('Veuillez saisir le montant minimum de commande');
-      return false;
-    }
-    if (form.condition_client === 'IMPLANTATION' && !form.implantation.trim()) {
-      alert('Veuillez saisir le détail de la commande d\'implantation');
       return false;
     }
     if (!form.date_debut) {
@@ -478,6 +447,26 @@ export default function CreatePromotion({ setPage }) {
       alert('La date de fin doit être postérieure à la date de début');
       return false;
     }
+    
+    if (form.visibility_mode === 'PUBLIC') {
+      if (!form.description.trim()) {
+        alert('Veuillez saisir une description commerciale pour l\'offre publique');
+        return false;
+      }
+      if (form.type_promo === 'PERCENT' && !form.remise_valeur) {
+        alert('Veuillez saisir le pourcentage de remise');
+        return false;
+      }
+      if (form.type_promo === 'FREE_ITEM' && !form.unite_offerte) {
+        alert('Veuillez saisir le nombre d\'unités offertes');
+        return false;
+      }
+      if (form.type_promo === 'ORDER_THRESHOLD' && !form.montant_minimum) {
+        alert('Veuillez saisir le montant minimum de commande');
+        return false;
+      }
+    }
+    
     return true;
   }
 
@@ -496,13 +485,18 @@ export default function CreatePromotion({ setPage }) {
     const fullDescription = buildDescription();
 
     const { error } = await supabase.from('promotions').insert({
-      titre: form.titre.trim(),
+      titre: form.produit.trim(),
       description: fullDescription,
       produit: form.produit.trim(),
       type_promo: form.type_promo,
       famille: form.famille,
       image_url: form.image_url || null,
       laboratoire_id: laboId,
+      visibility_mode: form.visibility_mode,
+      condition_client: form.condition_client,
+      date_debut: form.date_debut,
+      date_fin: form.date_fin,
+      csp: form.csp,
       active: true
     });
 
@@ -528,12 +522,12 @@ export default function CreatePromotion({ setPage }) {
       date_debut: '',
       date_fin: '',
       famille: '',
-      image_url: ''
+      image_url: '',
+      visibility_mode: 'SEMI_PRIVATE'
     });
     setLoading(false);
   }
 
-  // États d'affichage
   if (laboStatus === null) {
     return (
       <div className="create-page">
@@ -580,8 +574,6 @@ export default function CreatePromotion({ setPage }) {
                 className="form-submit" 
                 onClick={() => setPage('home')}
                 style={{ width: 'auto', padding: '14px 40px', background: 'white', color: '#061B5B', border: '2px solid #E4EAF7', boxShadow: 'none' }}
-                onMouseOver={(e) => { e.target.style.background = '#F7FAFF'; }}
-                onMouseOut={(e) => { e.target.style.background = 'white'; }}
               >
                 Retour à l'accueil
               </button>
@@ -622,7 +614,6 @@ export default function CreatePromotion({ setPage }) {
     );
   }
 
-  // Laboratoire actif - afficher le formulaire
   return (
     <div className="create-page">
       <div className="create-header">
@@ -645,20 +636,6 @@ export default function CreatePromotion({ setPage }) {
       <div className="create-container">
         <div className="create-form-wrapper">
           <form onSubmit={submit} className="create-form">
-            <div className="form-group">
-              <label htmlFor="titre" className="form-label">Titre de la promotion</label>
-              <input
-                id="titre"
-                name="titre"
-                type="text"
-                placeholder="Ex: -20% sur Doliprane"
-                value={form.titre}
-                onChange={update}
-                className="form-input"
-                required
-              />
-            </div>
-
             <div className="form-group">
               <label htmlFor="produit" className="form-label">Produit</label>
               <input
@@ -761,7 +738,6 @@ export default function CreatePromotion({ setPage }) {
                     className="form-input"
                     min="0"
                     max="100"
-                    required
                   />
                   <span className="form-input-suffix">%</span>
                 </div>
@@ -780,7 +756,6 @@ export default function CreatePromotion({ setPage }) {
                   onChange={update}
                   className="form-input"
                   min="1"
-                  required
                 />
               </div>
             )}
@@ -799,7 +774,6 @@ export default function CreatePromotion({ setPage }) {
                     className="form-input"
                     min="0"
                     step="0.01"
-                    required
                   />
                   <span className="form-input-suffix">€</span>
                 </div>
@@ -834,7 +808,6 @@ export default function CreatePromotion({ setPage }) {
                   value={form.implantation}
                   onChange={update}
                   className="form-input"
-                  required
                 />
               </div>
             )}
@@ -872,20 +845,51 @@ export default function CreatePromotion({ setPage }) {
             </div>
 
             <div className="form-group">
-              <label htmlFor="description" className="form-label">Description commerciale</label>
-              <textarea
-                id="description"
-                name="description"
-                placeholder="Ex: 15 unités achetées + 2 offertes pour les nouveaux clients."
-                value={form.description}
+              <label htmlFor="visibility_mode" className="form-label">Visibilité de l'offre</label>
+              <select
+                id="visibility_mode"
+                name="visibility_mode"
+                value={form.visibility_mode}
                 onChange={update}
-                className="form-textarea"
-                required
-              />
-              <span className="form-help">
-                Précisez les quantités, conditions, dates et restrictions éventuelles.
-              </span>
+                className="form-select"
+              >
+                {visibilityOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
             </div>
+
+            {form.visibility_mode === 'PUBLIC' && (
+              <div className="form-group">
+                <label htmlFor="description" className="form-label">Description commerciale</label>
+                <textarea
+                  id="description"
+                  name="description"
+                  placeholder="Ex: 15 unités achetées + 2 offertes pour les nouveaux clients."
+                  value={form.description}
+                  onChange={update}
+                  className="form-textarea"
+                />
+                <span className="form-help">
+                  Précisez les quantités, conditions, dates et restrictions éventuelles.
+                </span>
+              </div>
+            )}
+
+            {form.visibility_mode === 'SEMI_PRIVATE' && (
+              <div className="form-group">
+                <div className="form-info-box">
+                  <p className="form-info-text">
+                    Offre semi-privée : les pharmaciens verront : le laboratoire, la photo du produit, le nom du produit, le code EAN, le type d'offre, la condition client et la date de fin.
+                  </p>
+                  <p className="form-info-text">
+                    Les conditions commerciales détaillées restent confidentielles. Les pharmaciens pourront contacter le laboratoire directement depuis l'offre.
+                  </p>
+                </div>
+              </div>
+            )}
 
             <button type="submit" className="form-submit" disabled={loading || uploading || promoCount >= 10}>
               {loading ? 'Publication en cours...' : promoCount >= 10 ? 'Limite de 10 promotions atteinte' : 'Publier la promotion'}
@@ -907,6 +911,11 @@ export default function CreatePromotion({ setPage }) {
                 <img src={form.image_url} alt="Aperçu produit" />
               </div>
             )}
+
+            <div className="preview-lab-info">
+              <span className="preview-lab-name">{laboData?.nom || 'Laboratoire'}</span>
+            </div>
+
             <div className="preview-badge-wrapper">
               <div className={`preview-badge ${getBadgeColor(form.type_promo)}`}>
                 {getBadgeLabel(form.type_promo)}
@@ -917,12 +926,8 @@ export default function CreatePromotion({ setPage }) {
                 </div>
               )}
             </div>
+
             <div className="preview-content">
-              <div className="preview-block">
-                <p className="preview-label">Titre</p>
-                <p className="preview-value">{form.titre || 'Titre de la promotion'}</p>
-              </div>
-              
               <div className="preview-block">
                 <p className="preview-label">Produit</p>
                 <p className="preview-value">{form.produit || 'Nom du produit'}</p>
@@ -930,19 +935,19 @@ export default function CreatePromotion({ setPage }) {
 
               {form.csp && (
                 <div className="preview-block">
-                  <p className="preview-label">Code produit (GS1-128 / EAN)</p>
+                  <p className="preview-label">Code EAN</p>
                   <p className="preview-value">{form.csp}</p>
                 </div>
               )}
 
               <div className="preview-block">
-                <p className="preview-label">Condition client</p>
-                <p className="preview-condition">{getConditionLabel(form.condition_client)}</p>
+                <p className="preview-label">Type d'offre</p>
+                <p className="preview-offer">{getOfferDetail()}</p>
               </div>
 
               <div className="preview-block">
-                <p className="preview-label">Offre</p>
-                <p className="preview-offer">{getOfferDetail()}</p>
+                <p className="preview-label">Condition client</p>
+                <p className="preview-condition">{getConditionLabel(form.condition_client)}</p>
               </div>
 
               {form.date_debut && (
@@ -959,11 +964,31 @@ export default function CreatePromotion({ setPage }) {
                 </div>
               )}
 
-              {form.description && (
+              {form.visibility_mode === 'PUBLIC' && form.description && (
                 <div className="preview-block">
                   <p className="preview-label">Description</p>
                   <p className="preview-description">{form.description}</p>
                 </div>
+              )}
+
+              {form.visibility_mode === 'SEMI_PRIVATE' && (
+                <>
+                  <div className="preview-block">
+                    <p className="preview-label">Conditions commerciales</p>
+                    <p className="preview-description" style={{ color: '#0B45D9', fontWeight: '600' }}>
+                      Sur demande
+                    </p>
+                  </div>
+                  <div className="preview-block preview-block-contact">
+                    <p className="preview-label">Contact</p>
+                    <p className="preview-description" style={{ color: '#061B5B' }}>
+                      📞 {laboData?.telephone || 'Téléphone non renseigné'}
+                    </p>
+                  </div>
+                  <button className="preview-contact-btn">
+                    Contacter le laboratoire
+                  </button>
+                </>
               )}
             </div>
           </div>
