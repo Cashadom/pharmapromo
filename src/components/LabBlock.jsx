@@ -59,7 +59,7 @@ export default function LabBlock({ setPage }) {
           </div>
           
           <button className="lab-cta" onClick={() => setPage('pricing')}>
-            Répertorier mon laboratoire
+            Publier une offre
           </button>
         </div>
         
