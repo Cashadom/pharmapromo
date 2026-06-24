@@ -19,36 +19,14 @@ export default function Navbar({ setPage }) {
           />
         </button>
 
-        <nav className="navbar-links">
-          <a href="#promotions">Promotions</a>
-          <a href="#annuaire">Annuaire</a>
-          <button
-            type="button"
-            className="navbar-link-nav"
-            onClick={() => setPage('pricing')}
-          >
-            Laboratoires
-          </button>
-        </nav>
-
         <div className="navbar-actions">
-
           <button
             type="button"
-            className="navbar-link-button"
-            onClick={() => setPage('home')}
+            className="navbar-cta-secondary"
+            onClick={() => setPage('login')}
           >
-            Accueil
+            Se connecter
           </button>
-
-          <button
-            type="button"
-            className="navbar-cta"
-            onClick={() => setPage('create')}
-          >
-            Publier une promotion
-          </button>
-
         </div>
 
       </div>

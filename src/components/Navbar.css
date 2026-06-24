@@ -16,10 +16,9 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 24px;
 }
 
 .navbar-logo {
@@ -37,87 +36,33 @@
   display: block;
 }
 
-.navbar-links {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 36px;
-}
-
-.navbar-links a,
-.navbar-link-nav {
-  color: #07194A;
-  text-decoration: none;
-  font-size: 15px;
-  font-weight: 500;
-  transition: color 0.2s ease;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-  padding: 0;
-}
-
-.navbar-links a:hover,
-.navbar-link-nav:hover {
-  color: #0B45D9;
-}
-
 .navbar-actions {
   display: flex;
   align-items: center;
   gap: 12px;
-  justify-self: end;
 }
 
-.navbar-link-button {
-  background: none;
-  border: none;
-  color: #07194A;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 10px 16px;
-  border-radius: 60px;
-  transition: all 0.2s ease;
-}
-
-.navbar-link-button:hover {
-  background: #F7FAFF;
-  color: #0B45D9;
-}
-
-.navbar-cta {
-  background: #0B45D9;
-  color: #FFFFFF;
-  border: none;
-  padding: 11px 24px;
+.navbar-cta-secondary {
+  background: transparent;
+  color: #061B5B;
+  border: 2px solid #E4EAF7;
+  padding: 10px 24px;
   border-radius: 60px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 6px 16px rgba(11, 69, 217, 0.22);
+  font-family: inherit;
   white-space: nowrap;
 }
 
-.navbar-cta:hover {
-  background: #0A3DBF;
-  transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(11, 69, 217, 0.3);
+.navbar-cta-secondary:hover {
+  border-color: #0B45D9;
+  background: #F7FAFF;
+  transform: translateY(-2px);
 }
 
 /* Responsive */
-@media (max-width: 900px) {
-  .navbar-links {
-    display: none;
-  }
-
-  .navbar-inner {
-    grid-template-columns: auto auto;
-  }
-}
-
 @media (max-width: 560px) {
   .navbar {
     height: 64px;
@@ -127,12 +72,8 @@
     height: 28px;
   }
 
-  .navbar-link-button {
-    display: none;
-  }
-
-  .navbar-cta {
-    padding: 9px 18px;
-    font-size: 14px;
+  .navbar-cta-secondary {
+    padding: 8px 16px;
+    font-size: 13px;
   }
 }
