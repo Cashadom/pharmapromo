@@ -199,13 +199,6 @@ export default function PromoDirectory({ promos, loading, setPage }) {
                         {fields.dateFin || '—'}
                       </span>
                     </div>
-
-                    <div className="row-cell row-cell-action">
-                      <a href="#" className="row-link">
-                        <span>Voir</span>
-                        <span className="link-arrow" aria-hidden="true">→</span>
-                      </a>
-                    </div>
                   </div>
                 );
               })}

@@ -1,5 +1,5 @@
 .directory {
-  padding: 32px 24px 80px;  /* Avant: 80px 24px */
+  padding: 32px 24px 80px;
   background: #F7FAFF;
 }
 
@@ -60,15 +60,11 @@
   z-index: 1;
 }
 
-.directory-list-head,
-.promo-row {
+.directory-list-head {
   display: grid;
-  grid-template-columns: minmax(220px, 1.6fr) 100px 130px 130px 130px 84px;
+  grid-template-columns: minmax(220px, 1.6fr) 100px 130px 130px 130px;
   gap: 16px;
   align-items: center;
-}
-
-.directory-list-head {
   padding: 24px 28px 16px;
   border-bottom: 1px solid #E4EAF7;
 }
@@ -89,21 +85,27 @@
 /* --- Promo row avec badge expirant --- */
 .promo-row {
   position: relative;
-  padding: 20px 28px;
+  display: grid;
+  grid-template-columns: minmax(220px, 1.6fr) 100px 130px 130px 130px;
+  gap: 16px;
+  align-items: center;
+  padding: 18px 28px;
+  background: white;
   border-bottom: 1px solid #EEF2FB;
-  transition: background-color 0.15s ease;
+  transition: background-color 0.15s ease, box-shadow 0.2s ease;
+  margin-bottom: 2px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
 .promo-row:last-child {
   border-bottom: none;
-}
-
-.directory-rows > .promo-row:nth-child(even) {
-  background: #FAFBFF;
+  margin-bottom: 0;
 }
 
 .promo-row:hover {
   background: #F7FAFF;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 /* --- Badge "Se termine bientôt" --- */
@@ -286,39 +288,6 @@
   font-weight: 700;
 }
 
-.row-cell-action {
-  align-items: flex-end;
-}
-
-.row-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  color: #0B45D9;
-  font-weight: 700;
-  font-size: 14px;
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-.row-link:hover {
-  color: #0A3DBF;
-}
-
-.row-link:focus-visible {
-  outline: 2px solid #0B45D9;
-  outline-offset: 3px;
-  border-radius: 4px;
-}
-
-.link-arrow {
-  transition: transform 0.2s ease;
-}
-
-.row-link:hover .link-arrow {
-  transform: translateX(3px);
-}
-
 /* Skeleton loading */
 .skeleton {
   position: relative;
@@ -374,12 +343,6 @@
   height: 14px;
 }
 
-.skeleton-link-bar {
-  width: 48px;
-  height: 14px;
-  margin-left: auto;
-}
-
 /* Empty state */
 .directory-empty {
   display: flex;
@@ -419,10 +382,6 @@
     display: block;
   }
 
-  .row-cell-action {
-    align-items: flex-start;
-  }
-
   .expiring-badge {
     position: relative;
     top: 0;
@@ -441,7 +400,7 @@
 
 @media (max-width: 768px) {
   .directory {
-    padding: 48px 20px;
+    padding: 24px 20px 48px;
   }
 
   .directory-header {

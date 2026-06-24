@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import './Offres.css';
 
-export default function Offres({ setPage }) {
+export default function Offres({ setPage, setSelectedOfferId }) {
   const [promos, setPromos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -63,12 +63,14 @@ export default function Offres({ setPage }) {
 
     let query = supabase
       .from('promotions')
-      .select('*', { count: 'exact' })
+      .select('*, laboratoires(nom, logo_url, email, telephone)', { count: 'exact' })
       .eq('active', true)
       .order('created_at', { ascending: false });
 
     if (searchTerm.trim()) {
-      query = query.ilike('titre', `%${searchTerm.trim()}%`);
+      query = query.or(
+        `produit.ilike.%${searchTerm.trim()}%,titre.ilike.%${searchTerm.trim()}%,description.ilike.%${searchTerm.trim()}%`
+      );
     }
 
     if (selectedFamille) {
@@ -99,86 +101,17 @@ export default function Offres({ setPage }) {
 
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
-  const getBadgeColor = (type) => {
-    switch (type) {
-      case 'PERCENT':
-        return 'badge-percent';
-      case 'FREE_ITEM':
-        return 'badge-free';
-      case 'REORDER':
-        return 'badge-reorder';
-      case 'ORDER_THRESHOLD':
-        return 'badge-threshold';
-      default:
-        return 'badge-default';
-    }
-  };
-
-  const getBadgeLabel = (type) => {
-    switch (type) {
-      case 'PERCENT':
-        return '%';
-      case 'FREE_ITEM':
-        return 'Offert';
-      case 'REORDER':
-        return 'Réassort';
-      case 'ORDER_THRESHOLD':
-        return 'Min.';
-      default:
-        return '';
-    }
-  };
-
-  function parseDescriptionFields(description) {
-    const result = {
-      offre: null,
-      condition: null,
-      dateFin: null,
-      famille: null,
-    };
-
-    if (!description) return result;
-
-    const segments = description.split('|').map((s) => s.trim()).filter(Boolean);
-
-    segments.forEach((segment) => {
-      const sepIndex = segment.indexOf(':');
-      if (sepIndex === -1) return;
-
-      const rawKey = segment.slice(0, sepIndex).trim();
-      const value = segment.slice(sepIndex + 1).trim();
-
-      const key = rawKey
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '');
-
-      if (key.includes('offre')) result.offre = value;
-      else if (key.includes('condition')) result.condition = value;
-      else if (key.includes('fin')) result.dateFin = value;
-      else if (key.includes('famille')) result.famille = value;
-    });
-
-    return result;
-  }
-
-  function isExpiringSoon(dateFin) {
+  function isExpiringSoonDbDate(dateFin) {
     if (!dateFin) return false;
-    const parts = dateFin.split('/');
-    if (parts.length !== 3) return false;
-    const day = parseInt(parts[0], 10);
-    const month = parseInt(parts[1], 10) - 1;
-    const year = parseInt(parts[2], 10);
-    if (isNaN(day) || isNaN(month) || isNaN(year)) return false;
-    const endDate = new Date(year, month, day);
+    const endDate = new Date(dateFin);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const diffTime = endDate - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    endDate.setHours(0, 0, 0, 0);
+    const diffDays = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
     return diffDays >= 0 && diffDays <= 7;
   }
 
-  const getConditionLabel = (value) => {
+  function getConditionLabel(value) {
     switch (value) {
       case 'ALL':
         return 'Toutes officines';
@@ -189,9 +122,8 @@ export default function Offres({ setPage }) {
       default:
         return value || '—';
     }
-  };
+  }
 
-  // Reset filters
   function resetFilters() {
     setSearchTerm('');
     setSelectedFamille('');
@@ -328,8 +260,7 @@ export default function Offres({ setPage }) {
                 </div>
                 <div className="offres-table-body">
                   {promos.map((promo) => {
-                    const fields = parseDescriptionFields(promo.description);
-                    const expiringSoon = isExpiringSoon(fields.dateFin);
+                    const expiringSoon = isExpiringSoonDbDate(promo.date_fin);
 
                     return (
                       <div key={promo.id} className={`offre-row ${expiringSoon ? 'expiring' : ''}`}>
@@ -342,32 +273,45 @@ export default function Offres({ setPage }) {
                           <span className="offre-product-name">{promo.produit}</span>
                         </div>
                         <div className="offre-cell cell-lab">
-                          <span className="offre-lab">{promo.titre}</span>
+                          <span className="offre-lab">
+                            {promo.laboratoires?.nom || promo.titre || 'Laboratoire'}
+                          </span>
                         </div>
                         <div className="offre-cell cell-famille">
-                          <span className="offre-famille">{fields.famille || '—'}</span>
+                          <span className="offre-famille">{promo.famille || '—'}</span>
                         </div>
                         <div className="offre-cell cell-offre">
                           <span className={`offre-badge ${getBadgeColor(promo.type_promo)}`}>
                             {getBadgeLabel(promo.type_promo)}
                           </span>
-                          <span className="offre-offer-value">{fields.offre || ''}</span>
+                          <span className="offre-offer-value">
+                            {promo.type_promo === 'PERCENT' && promo.remise_valeur ? `${promo.remise_valeur}%` : ''}
+                            {promo.type_promo === 'FREE_ITEM' && promo.unite_offerte ? `${promo.unite_offerte} unités` : ''}
+                            {promo.type_promo === 'ORDER_THRESHOLD' && promo.montant_minimum ? `${promo.montant_minimum}€` : ''}
+                          </span>
                         </div>
                         <div className="offre-cell cell-cible">
                           <span className="offre-cible">{getConditionLabel(promo.condition_client)}</span>
                         </div>
                         <div className="offre-cell cell-fin">
                           <span className={`offre-date ${expiringSoon ? 'date-expiring' : ''}`}>
-                            {fields.dateFin || '—'}
+                            {promo.date_fin ? new Date(promo.date_fin).toLocaleDateString('fr-FR') : '—'}
                           </span>
                           {expiringSoon && (
                             <span className="offre-expiring-dot"></span>
                           )}
                         </div>
                         <div className="offre-cell cell-action">
-                          <a href="#" className="offre-link">
+                          <button
+                            type="button"
+                            className="offre-link"
+                            onClick={() => {
+                              setSelectedOfferId(promo.id);
+                              setPage('offer-detail');
+                            }}
+                          >
                             Voir →
-                          </a>
+                          </button>
                         </div>
                       </div>
                     );
@@ -422,4 +366,31 @@ export default function Offres({ setPage }) {
       </div>
     </section>
   );
+}
+
+// Fonctions helpers en dehors du composant
+function getBadgeColor(type) {
+  switch (type) {
+    case 'PERCENT':
+      return 'badge-percent';
+    case 'FREE_ITEM':
+      return 'badge-free';
+    case 'ORDER_THRESHOLD':
+      return 'badge-threshold';
+    default:
+      return 'badge-default';
+  }
+}
+
+function getBadgeLabel(type) {
+  switch (type) {
+    case 'PERCENT':
+      return '%';
+    case 'FREE_ITEM':
+      return 'Offert';
+    case 'ORDER_THRESHOLD':
+      return 'Min.';
+    default:
+      return '';
+  }
 }
