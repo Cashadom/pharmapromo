@@ -236,7 +236,7 @@ export default function OfferDetail({ setPage, offerId }) {
             <div className="offer-detail-contact">
               <a href={getMailtoLink()} className="offer-detail-contact-btn">
                 <img src={emailIcon} alt="Email" className="offer-detail-contact-icon" />
-                Contacter le laboratoire
+                Contacter le fournisseur
               </a>
               {offer.laboratoires?.telephone && (
                 <a href={`tel:${offer.laboratoires.telephone}`} className="offer-detail-phone">
