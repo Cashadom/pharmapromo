@@ -3,7 +3,6 @@ import back from '../assets/back.png';
 export default function Hero({ setPage }) {
   return (
     <section className="hero">
-      {/* Fond décoratif animé */}
       <div className="hero-bg" aria-hidden="true">
         <span className="blob blob-1"></span>
         <span className="blob blob-2"></span>
@@ -15,7 +14,6 @@ export default function Hero({ setPage }) {
       </div>
 
       <div className="hero-container">
-        {/* Left content */}
         <div className="hero-left">
           <div className="badge">Gratuit pour les pharmacies</div>
           
@@ -45,7 +43,6 @@ export default function Hero({ setPage }) {
           </div>
         </div>
         
-        {/* Right image */}
         <div className="hero-right">
           <img 
             src={back} 
@@ -55,8 +52,7 @@ export default function Hero({ setPage }) {
         </div>
       </div>
       
-      <style jsx>{`
-        /* ---- Import Google Font pour le style handwriting moderne ---- */
+      <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap');
 
         .hero {
@@ -69,7 +65,6 @@ export default function Hero({ setPage }) {
           position: relative;
         }
 
-        /* ---- Fond animé (ronds discrets) ---- */
         .hero-bg {
           position: absolute;
           inset: 0;
@@ -205,7 +200,6 @@ export default function Hero({ setPage }) {
           z-index: 1;
         }
         
-        /* Left content */
         .hero-left {
           display: flex;
           flex-direction: column;
@@ -232,7 +226,6 @@ export default function Hero({ setPage }) {
           font-weight: 700;
         }
         
-        /* Style handwriting moderne pour "enfin au même endroit" */
         .handwriting {
           font-family: 'Caveat', cursive;
           font-weight: 700;
@@ -278,7 +271,6 @@ export default function Hero({ setPage }) {
           font-weight: 700;
         }
         
-        /* Right image */
         .hero-right {
           display: flex;
           justify-content: center;
@@ -301,7 +293,6 @@ export default function Hero({ setPage }) {
           transform: scale(1.07);
         }
         
-        /* Responsive */
         @media (max-width: 1024px) {
           .hero-container {
             grid-template-columns: 1fr;

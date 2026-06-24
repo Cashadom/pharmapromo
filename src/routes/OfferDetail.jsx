@@ -16,11 +16,19 @@ export default function OfferDetail({ setPage, offerId }) {
         return;
       }
 
+      console.log('🔄 Mise à jour de la consultation pour offre:', offerId);
+
       // 1. Mettre à jour updated_at (dernière consultation)
-      await supabase
+      const { error: updateError } = await supabase
         .from('promotions')
         .update({ updated_at: new Date().toISOString() })
         .eq('id', offerId);
+
+      if (updateError) {
+        console.error('❌ Erreur mise à jour updated_at:', updateError);
+      } else {
+        console.log('✅ updated_at mis à jour avec succès');
+      }
 
       // 2. Récupérer les données de l'offre avec le laboratoire
       const { data, error } = await supabase
@@ -45,6 +53,7 @@ export default function OfferDetail({ setPage, offerId }) {
         return;
       }
 
+      console.log('📦 Offre chargée:', data.produit);
       setOffer(data);
       setLoading(false);
     }

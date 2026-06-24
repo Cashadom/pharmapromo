@@ -61,6 +61,9 @@ export default function PromoHighlights({ promos, loading, setPage, setSelectedO
     const diffMs = now - lastView;
     const diffMins = Math.floor(diffMs / (1000 * 60));
     
+    // Log pour debug
+    console.log(`🔍 Date: ${date}, Diff minutes: ${diffMins}`);
+    
     if (diffMins < 1) return 'moins d\'une minute';
     if (diffMins === 1) return '1 minute';
     if (diffMins < 60) return `${diffMins} minutes`;
@@ -139,7 +142,7 @@ export default function PromoHighlights({ promos, loading, setPage, setSelectedO
             const timeSinceLastView = getTimeSinceLastView(promo.updated_at);
 
             return (
-              <div key={promo.id} className="highlight-card">
+              <div key={`${promo.id}-${promo.updated_at}`} className="highlight-card">
                 {promo.image_url && (
                   <div className="highlight-image">
                     <img src={promo.image_url} alt={promo.titre} />
