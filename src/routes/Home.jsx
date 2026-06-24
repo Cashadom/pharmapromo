@@ -8,7 +8,7 @@ import PromoDirectory from '../components/PromoDirectory';
 import LabBlock from '../components/LabBlock';
 import Footer from '../components/Footer';
 
-export default function Home({ setPage }) {
+export default function Home({ setPage, setSelectedOfferId }) {
   const [promos, setPromos] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -43,6 +43,8 @@ export default function Home({ setPage }) {
       <PromoHighlights
         promos={promos.slice(0, 6)}
         loading={loading}
+        setPage={setPage}
+        setSelectedOfferId={setSelectedOfferId}
       />
 
       <PromoDirectory

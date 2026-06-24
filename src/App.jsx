@@ -13,7 +13,12 @@ export default function App() {
 
   return (
     <>
-      {page === 'home' && <Home setPage={setPage} />}
+      {page === 'home' && (
+        <Home 
+          setPage={setPage} 
+          setSelectedOfferId={setSelectedOfferId} 
+        />
+      )}
       {page === 'create' && <CreatePromotion setPage={setPage} />}
       {page === 'pricing' && <LabPricing setPage={setPage} />}
       {page === 'lab-register' && <LabRegister setPage={setPage} />}

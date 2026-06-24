@@ -1,7 +1,7 @@
 import React from 'react';
 import './PromoHighlights.css';
 
-export default function PromoHighlights({ promos, loading }) {
+export default function PromoHighlights({ promos, loading, setPage, setSelectedOfferId }) {
   const getBadgeColor = (type) => {
     switch(type) {
       case 'PERCENT':
@@ -53,7 +53,27 @@ export default function PromoHighlights({ promos, loading }) {
     return match ? match[1] : null;
   };
 
-  // Récupérer le nombre de promotions (max 6)
+  const getTimeSinceLastView = (date) => {
+    if (!date) return null;
+    
+    const now = new Date();
+    const lastView = new Date(date);
+    const diffMs = now - lastView;
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    
+    if (diffMins < 1) return 'moins d\'une minute';
+    if (diffMins === 1) return '1 minute';
+    if (diffMins < 60) return `${diffMins} minutes`;
+    
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours === 1) return '1 heure';
+    if (diffHours < 24) return `${diffHours} heures`;
+    
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays === 1) return '1 jour';
+    return `${diffDays} jours`;
+  };
+
   const displayPromos = promos.slice(0, 6);
 
   if (loading) {
@@ -116,6 +136,7 @@ export default function PromoHighlights({ promos, loading }) {
             const franco = extractField(promo.description, 'Franco');
 
             const hasDetails = csp || condition || franco;
+            const timeSinceLastView = getTimeSinceLastView(promo.updated_at);
 
             return (
               <div key={promo.id} className="highlight-card">
@@ -167,12 +188,24 @@ export default function PromoHighlights({ promos, loading }) {
                   {promo.famille && (
                     <span className="highlight-famille">{promo.famille}</span>
                   )}
+                  {timeSinceLastView && (
+                    <span className="highlight-views">
+                      👁️ Dernière consultation il y a {timeSinceLastView}
+                    </span>
+                  )}
                 </div>
 
-                <a href="#promo-directory" className="highlight-link">
+                <button
+                  type="button"
+                  className="highlight-link"
+                  onClick={() => {
+                    setSelectedOfferId(promo.id);
+                    setPage('offer-detail');
+                  }}
+                >
                   <span>Voir la promotion</span>
                   <span className="link-arrow" aria-hidden="true">→</span>
-                </a>
+                </button>
               </div>
             );
           })}

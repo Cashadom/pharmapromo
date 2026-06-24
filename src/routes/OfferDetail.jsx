@@ -16,6 +16,13 @@ export default function OfferDetail({ setPage, offerId }) {
         return;
       }
 
+      // 1. Mettre à jour updated_at (dernière consultation)
+      await supabase
+        .from('promotions')
+        .update({ updated_at: new Date().toISOString() })
+        .eq('id', offerId);
+
+      // 2. Récupérer les données de l'offre avec le laboratoire
       const { data, error } = await supabase
         .from('promotions')
         .select(`
