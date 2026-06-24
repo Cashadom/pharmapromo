@@ -141,8 +141,11 @@ export default function PromoHighlights({ promos, loading, setPage, setSelectedO
             const hasDetails = csp || condition || franco;
             const timeSinceLastView = getTimeSinceLastView(promo.updated_at);
 
+            // Ajouter un timestamp pour forcer le re-render
+            const cardKey = `${promo.id}-${promo.updated_at || promo.created_at}`;
+
             return (
-              <div key={`${promo.id}-${promo.updated_at}`} className="highlight-card">
+              <div key={cardKey} className="highlight-card">
                 {promo.image_url && (
                   <div className="highlight-image">
                     <img src={promo.image_url} alt={promo.titre} />
