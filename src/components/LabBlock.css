@@ -13,7 +13,7 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.32;
+  opacity: 0.42;
   overflow: hidden;
 }
 
@@ -368,7 +368,7 @@
   }
   
   .lab-title {
-    font-size: 28px;
+    font-size: 24px;  /* Réduit de 28px à 24px */
   }
   
   .lab-description {
@@ -419,5 +419,12 @@
 
   .lab-illustration {
     background: rgba(255, 255, 255, 0.95);
+  }
+}
+
+/* Très petits écrans (moins de 480px) */
+@media (max-width: 480px) {
+  .lab-title {
+    font-size: 20px;  /* Encore plus petit pour très petits écrans */
   }
 }
