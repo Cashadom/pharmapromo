@@ -1,3 +1,4 @@
+/* Navbar.css */
 .navbar {
   position: sticky;
   top: 0;
@@ -42,6 +43,24 @@
   gap: 12px;
 }
 
+.navbar-link-button {
+  background: none;
+  border: none;
+  color: #07194A;
+  font-size: 15px;
+  font-weight: 400;
+  cursor: pointer;
+  padding: 10px 16px;
+  border-radius: 60px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.navbar-link-button:hover {
+  background: #F7FAFF;
+  color: #0B45D9;
+}
+
 .navbar-cta-secondary {
   background: transparent;
   color: #061B5B;
@@ -49,7 +68,7 @@
   padding: 10px 24px;
   border-radius: 60px;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: inherit;
@@ -70,6 +89,11 @@
 
   .navbar-logo-image {
     height: 28px;
+  }
+
+  .navbar-link-button {
+    padding: 8px 12px;
+    font-size: 13px;
   }
 
   .navbar-cta-secondary {
