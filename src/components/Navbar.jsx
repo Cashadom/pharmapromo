@@ -40,13 +40,6 @@ export default function Navbar({ setPage }) {
             <>
               <button
                 type="button"
-                className="navbar-link-button"
-                onClick={() => setPage('dashboard')}
-              >
-                Dashboard
-              </button>
-              <button
-                type="button"
                 className="navbar-cta-secondary"
                 onClick={handleLogout}
               >

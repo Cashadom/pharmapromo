@@ -18,7 +18,7 @@ export default function LabBlock({ setPage }) {
       <div className="lab-block-container">
         {/* Left content */}
         <div className="lab-block-left">
-          <span className="lab-badge">Pour les laboratoires</span>
+          <span className="lab-badge"></span>
           
           <h2 className="lab-title">
             Vous êtes un laboratoire ?
@@ -57,6 +57,11 @@ export default function LabBlock({ setPage }) {
               </div>
             </div>
           </div>
+          
+          {/* Bouton Dashboard - UNIQUEMENT la classe lab-cta-dashboard */}
+          <button className="lab-cta-dashboard" onClick={() => setPage('dashboard')}>
+            Votre Dashboard
+          </button>
           
           <button className="lab-cta" onClick={() => setPage('pricing')}>
             Publier une offre
