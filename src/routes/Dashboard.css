@@ -9,7 +9,6 @@
   margin: 0 auto;
 }
 
-/* ---- Header ---- */
 .dashboard-header {
   display: flex;
   justify-content: space-between;
@@ -28,9 +27,10 @@
   font-weight: 700;
   color: #061B5B;
   margin: 0 0 4px 0;
+  letter-spacing: -0.01em;
 }
 
-.dashboard-lab-name {
+.dashboard-title .dashboard-lab-name {
   background: linear-gradient(135deg, #0B45D9, #24B8A9);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -55,6 +55,7 @@
   transition: all 0.2s ease;
   box-shadow: 0 6px 16px rgba(11, 69, 217, 0.22);
   white-space: nowrap;
+  font-family: inherit;
 }
 
 .dashboard-cta:hover {
@@ -63,7 +64,6 @@
   box-shadow: 0 10px 24px rgba(11, 69, 217, 0.3);
 }
 
-/* ---- Status card ---- */
 .dashboard-status-card {
   background: white;
   border-radius: 16px;
@@ -132,6 +132,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-family: inherit;
 }
 
 .status-cta:hover {
@@ -139,7 +140,6 @@
   transform: translateY(-1px);
 }
 
-/* ---- Stats ---- */
 .dashboard-stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -158,9 +158,25 @@
 
 .stat-number {
   font-size: 32px;
-  font-weight: 800;
+  font-weight: 700;
   color: #061B5B;
   line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-feature-settings: "tnum";
+}
+
+.stat-icon-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  margin-bottom: 4px;
+}
+
+.stat-icon-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
 }
 
 .stat-label {
@@ -169,7 +185,6 @@
   margin-top: 4px;
 }
 
-/* ---- Promotions ---- */
 .dashboard-promos {
   background: white;
   border-radius: 24px;
@@ -210,7 +225,6 @@
   color: #0A3DBF;
 }
 
-/* ---- Table ---- */
 .dashboard-table-wrapper {
   overflow-x: auto;
 }
@@ -224,7 +238,27 @@
 .dashboard-table thead {
   background: #F7FAFF;
 }
+/* ---- Bouton Retour ---- */
+.dashboard-back-wrapper {
+  padding-bottom: 16px;
+}
 
+.dashboard-back-button {
+  background: none;
+  border: none;
+  color: #667399;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+  font-family: inherit;
+  padding: 0;
+}
+
+.dashboard-back-button:hover {
+  color: #0B45D9;
+  transform: translateX(-2px);
+}
 .dashboard-table th {
   text-align: left;
   padding: 14px 20px;
@@ -365,7 +399,6 @@
   background: #FFF5F7;
 }
 
-/* ---- Empty state ---- */
 .dashboard-empty {
   padding: 48px 24px;
   text-align: center;
@@ -388,6 +421,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 6px 16px rgba(11, 69, 217, 0.22);
+  font-family: inherit;
 }
 
 .btn-primary:hover {
@@ -396,7 +430,6 @@
   box-shadow: 0 10px 24px rgba(11, 69, 217, 0.3);
 }
 
-/* ---- Table footer ---- */
 .dashboard-table-footer {
   padding: 16px 24px;
   text-align: center;
@@ -418,7 +451,6 @@
   color: #0A3DBF;
 }
 
-/* ---- Error ---- */
 .dashboard-error {
   background: white;
   border-radius: 24px;
@@ -439,7 +471,6 @@
   margin: 0 0 24px 0;
 }
 
-/* ---- Skeleton ---- */
 .dashboard-skeleton {
   background: white;
   border-radius: 24px;
@@ -482,7 +513,6 @@
   50% { opacity: 1; }
 }
 
-/* ---- Responsive ---- */
 @media (max-width: 1024px) {
   .dashboard-stats {
     grid-template-columns: repeat(2, 1fr);

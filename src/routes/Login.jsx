@@ -143,6 +143,7 @@ export default function Login({ setPage }) {
       });
 
       if (insertError) {
+        console.error('❌ Erreur insertion laboratoire:', insertError);
         setErrorMsg(
           "Le compte a été créé mais l'espace laboratoire n'a pas pu être initialisé. Contactez le support."
         );
@@ -150,8 +151,10 @@ export default function Login({ setPage }) {
         return;
       }
 
+      // ✅ Rediriger vers le dashboard
       setPage('dashboard');
     } catch (err) {
+      console.error('❌ Erreur signup:', err);
       setErrorMsg('Une erreur est survenue. Merci de réessayer.');
     } finally {
       setLoading(false);

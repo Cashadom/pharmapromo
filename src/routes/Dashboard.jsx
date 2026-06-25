@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import './Dashboard.css';
+import timeIcon from '../assets/time.png';
 
 export default function Dashboard({ setPage }) {
   const [loading, setLoading] = useState(true);
@@ -41,7 +42,6 @@ export default function Dashboard({ setPage }) {
 
     setLabo(data);
 
-    // Vérifier si l'essai est expiré
     if (data.statut === 'expired' || 
         (data.statut === 'trial' && data.trial_ends_at && new Date(data.trial_ends_at) < new Date())) {
       setPage('pricing');
@@ -83,7 +83,7 @@ export default function Dashboard({ setPage }) {
       const days = getDaysRemaining();
       if (days <= 3 && days > 0) return { label: `Essai se termine dans ${days} jours`, color: 'warning' };
       if (days === 0) return { label: 'Essai terminé', color: 'danger' };
-      return { label: `Essai gratuit - ${days} jours restants`, color: 'info' };
+      return { label: `Essai gratuit`, color: 'info' };
     }
     if (labo?.statut === 'expired') return { label: 'Essai terminé', color: 'danger' };
     return { label: labo?.statut || '—', color: 'default' };
@@ -132,7 +132,15 @@ export default function Dashboard({ setPage }) {
   return (
     <div className="dashboard-page">
       <div className="dashboard-container">
-        {/* Header */}
+        <div className="dashboard-back-wrapper">
+          <button 
+            className="dashboard-back-button"
+            onClick={() => setPage('home')}
+          >
+            ← Retour à l'accueil
+          </button>
+        </div>
+
         <div className="dashboard-header">
           <div className="dashboard-header-left">
             <h1 className="dashboard-title">
@@ -150,7 +158,6 @@ export default function Dashboard({ setPage }) {
           </button>
         </div>
 
-        {/* Status card */}
         <div className="dashboard-status-card">
           <div className="status-info">
             <span className={`status-badge status-${status.color}`}>
@@ -180,7 +187,6 @@ export default function Dashboard({ setPage }) {
           </div>
         </div>
 
-        {/* Stats */}
         <div className="dashboard-stats">
           <div className="stat-card">
             <div className="stat-number">{activePromos}</div>
@@ -191,16 +197,13 @@ export default function Dashboard({ setPage }) {
             <div className="stat-label">Total des offres</div>
           </div>
           <div className="stat-card">
-            <div className="stat-number">{daysRemaining}</div>
-            <div className="stat-label">Jours restants d'essai</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-number">{labo.statut === 'active' ? '✓' : labo.statut === 'trial' ? '⏳' : '⚠️'}</div>
+            <div className="stat-icon-card">
+              <img src={timeIcon} alt="Statut" className="stat-icon-img" />
+            </div>
             <div className="stat-label">{labo.statut === 'active' ? 'Actif' : labo.statut === 'trial' ? 'Essai' : 'Expiré'}</div>
           </div>
         </div>
 
-        {/* Promotions table */}
         <div className="dashboard-promos">
           <div className="dashboard-promos-header">
             <h3 className="dashboard-promos-title">Mes dernières offres</h3>
@@ -271,9 +274,7 @@ export default function Dashboard({ setPage }) {
                         </button>
                         <button 
                           className="action-btn action-edit"
-                          onClick={() => {
-                            // Modifier - à implémenter
-                          }}
+                          onClick={() => {}}
                         >
                           Modifier
                         </button>
