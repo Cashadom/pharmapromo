@@ -1,10 +1,62 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 import './LabPricing.css';
 import icon7 from '../assets/icon7.png';
 import icon8 from '../assets/icon8.png';
 import icon9 from '../assets/icon9.png';
 
 export default function LabPricing({ setPage }) {
+  const [session, setSession] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleCtaClick = () => {
+    if (session) {
+      // Si déjà connecté, aller au dashboard
+      setPage('dashboard');
+    } else {
+      // Sinon, aller à la page de connexion
+      setPage('login');
+    }
+  };
+
+  const handleCardCtaClick = () => {
+    if (session) {
+      setPage('dashboard');
+    } else {
+      setPage('login');
+    }
+  };
+
+  if (loading) {
+    return (
+      <section className="pricing-page">
+        <div className="pricing-container">
+          <div className="pricing-back-wrapper">
+            <button className="pricing-back-button" onClick={() => setPage('home')}>
+              ← Retour à l'accueil
+            </button>
+          </div>
+          <div className="pricing-hero">
+            <p>Chargement...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="pricing-page">
       {/* Fond décoratif animé - ronds comme dans Hero */}
@@ -42,9 +94,9 @@ export default function LabPricing({ setPage }) {
           </p>
           <button 
             className="pricing-cta"
-            onClick={() => setPage('lab-register')}
+            onClick={handleCtaClick}
           >
-            Répertorier mon laboratoire
+            {session ? 'Accéder à mon espace' : 'Répertorier mon laboratoire'}
           </button>
         </div>
 
@@ -91,9 +143,9 @@ export default function LabPricing({ setPage }) {
               </ul>
               <button 
                 className="pricing-card-cta"
-                onClick={() => setPage('lab-register')}
+                onClick={handleCardCtaClick}
               >
-                Commencer gratuitement
+                {session ? 'Accéder à mon espace' : 'Commencer gratuitement'}
               </button>
             </div>
           </div>

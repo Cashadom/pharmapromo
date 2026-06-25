@@ -142,7 +142,15 @@ export default function OfferDetail({ setPage, offerId }) {
     return (
       <section className="offer-detail-page">
         <div className="offer-detail-container">
-          <button className="offer-detail-back" onClick={() => setPage('offres')}>
+          <button 
+            className="offer-detail-back" 
+            onClick={() => {
+              setPage('offres');
+              setTimeout(() => {
+                window.location.reload();
+              }, 200);
+            }}
+          >
             ← Retour aux offres
           </button>
           <div className="offer-detail-skeleton">
@@ -161,7 +169,15 @@ export default function OfferDetail({ setPage, offerId }) {
     return (
       <section className="offer-detail-page">
         <div className="offer-detail-container">
-          <button className="offer-detail-back" onClick={() => setPage('offres')}>
+          <button 
+            className="offer-detail-back" 
+            onClick={() => {
+              setPage('offres');
+              setTimeout(() => {
+                window.location.reload();
+              }, 200);
+            }}
+          >
             ← Retour aux offres
           </button>
           <div className="offer-detail-error">
@@ -176,7 +192,15 @@ export default function OfferDetail({ setPage, offerId }) {
   return (
     <section className="offer-detail-page">
       <div className="offer-detail-container">
-        <button className="offer-detail-back" onClick={() => setPage('offres')}>
+        <button 
+          className="offer-detail-back" 
+          onClick={() => {
+            setPage('offres');
+            setTimeout(() => {
+              window.location.reload();
+            }, 200);
+          }}
+        >
           ← Retour aux offres
         </button>
 

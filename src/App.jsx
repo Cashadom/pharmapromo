@@ -6,6 +6,8 @@ import LabRegister from './routes/LabRegister';
 import Mentions from './routes/Mentions';
 import Offres from './routes/Offres';
 import OfferDetail from './routes/OfferDetail';
+import Login from './routes/Login';
+import Dashboard from './routes/Dashboard';
 
 export default function App() {
   const [page, setPage] = useState('home');
@@ -35,6 +37,8 @@ export default function App() {
           offerId={selectedOfferId}
         />
       )}
+      {page === 'login' && <Login setPage={setPage} />}
+      {page === 'dashboard' && <Dashboard setPage={setPage} />}
     </>
   );
 }
