@@ -54,7 +54,6 @@
   border-color: #E4EAF7;
 }
 
-/* ---- Toutes les cartes ont maintenant le même style ---- */
 .highlight-card::before {
   content: '';
   position: absolute;
@@ -64,6 +63,26 @@
   height: 4px;
   border-radius: 24px 24px 0 0;
   background: linear-gradient(90deg, #0B45D9, #24B8A9, #FF5F8F);
+}
+
+/* ---- Famille en haut à droite (petite fenêtre opaque) ---- */
+.highlight-famille-top {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #FFFFFF;
+  background: rgba(11, 69, 217, 0.85);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  padding: 6px 14px;
+  border-radius: 100px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(11, 69, 217, 0.20);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 /* Image du produit */
@@ -236,27 +255,11 @@
 .highlight-footer-meta {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 10px;
   flex-wrap: wrap;
   padding-top: 8px;
   border-top: 1px solid #EEF2FB;
-}
-
-.highlight-lab {
-  font-size: 13px;
-  font-weight: 600;
-  color: #667399;
-}
-
-.highlight-famille {
-  font-size: 12px;
-  font-weight: 600;
-  color: #667399;
-  background: rgba(102, 115, 153, 0.10);
-  border: 1px solid rgba(102, 115, 153, 0.16);
-  padding: 3px 10px;
-  border-radius: 100px;
 }
 
 .highlight-views {
@@ -496,5 +499,12 @@
   .highlight-views {
     font-size: 11px;
     padding: 2px 8px;
+  }
+
+  .highlight-famille-top {
+    font-size: 10px;
+    padding: 4px 10px;
+    top: 12px;
+    right: 12px;
   }
 }

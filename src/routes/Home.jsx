@@ -68,7 +68,7 @@ export default function Home({ setPage, setSelectedOfferId }) {
       <Hero setPage={setPage} />
 
       <PromoHighlights
-        promos={promos.slice(0, 6)}
+        promos={promos.slice(0, 9)}
         loading={loading}
         setPage={setPage}
         setSelectedOfferId={setSelectedOfferId}

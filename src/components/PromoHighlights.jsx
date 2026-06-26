@@ -61,9 +61,6 @@ export default function PromoHighlights({ promos, loading, setPage, setSelectedO
     const diffMs = now - lastView;
     const diffMins = Math.floor(diffMs / (1000 * 60));
     
-    // Log pour debug
-    console.log(`🔍 Date: ${date}, Diff minutes: ${diffMins}`);
-    
     if (diffMins < 1) return 'moins d\'une minute';
     if (diffMins === 1) return '1 minute';
     if (diffMins < 60) return `${diffMins} minutes`;
@@ -77,7 +74,8 @@ export default function PromoHighlights({ promos, loading, setPage, setSelectedO
     return `${diffDays} jours`;
   };
 
-  const displayPromos = promos.slice(0, 6);
+  // Afficher 12 offres
+  const displayPromos = promos.slice(0, 12);
 
   if (loading) {
     return (
@@ -88,7 +86,7 @@ export default function PromoHighlights({ promos, loading, setPage, setSelectedO
             <p className="highlights-subtitle">Les dernières offres publiées par les laboratoires.</p>
           </div>
           <div className="highlights-grid">
-            {[1, 2, 3, 4, 5, 6].map((n) => (
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((n) => (
               <div key={n} className="highlight-card skeleton">
                 <div className="skeleton-image"></div>
                 <div className="skeleton-offer"></div>
@@ -141,11 +139,15 @@ export default function PromoHighlights({ promos, loading, setPage, setSelectedO
             const hasDetails = csp || condition || franco;
             const timeSinceLastView = getTimeSinceLastView(promo.updated_at);
 
-            // Ajouter un timestamp pour forcer le re-render
             const cardKey = `${promo.id}-${promo.updated_at || promo.created_at}`;
 
             return (
               <div key={cardKey} className="highlight-card">
+                {/* 🔥 FAMILLE EN HAUT À DROITE */}
+                {promo.famille && (
+                  <span className="highlight-famille-top">{promo.famille}</span>
+                )}
+
                 {promo.image_url && (
                   <div className="highlight-image">
                     <img src={promo.image_url} alt={promo.titre} />
@@ -190,10 +192,7 @@ export default function PromoHighlights({ promos, loading, setPage, setSelectedO
                 )}
 
                 <div className="highlight-footer-meta">
-                  <span className="highlight-lab">{promo.titre}</span>
-                  {promo.famille && (
-                    <span className="highlight-famille">{promo.famille}</span>
-                  )}
+                  {/* 🔥 LABORATOIRE SUPPRIMÉ */}
                   {timeSinceLastView && (
                     <span className="highlight-views">
                       👁️ Dernière consultation il y a {timeSinceLastView}

@@ -1,86 +1,35 @@
+// src/routes/CreatePromotion.jsx
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import './CreatePromotion.css';
 
 export default function CreatePromotion({ setPage }) {
   const [form, setForm] = useState({
-    titre: '',
-    description: '',
     produit: '',
     type_promo: 'PERCENT',
-    csp: '',
-    remise_valeur: '',
-    unite_offerte: '',
-    condition_client: 'ALL',
-    implantation: '',
-    montant_minimum: '',
-    date_debut: '',
-    date_fin: '',
     famille: '',
     image_url: '',
-    visibility_mode: 'SEMI_PRIVATE'
+    visibility_mode: 'PUBLIC',
+    condition_client: 'ALL',
+    date_debut: '',
+    date_fin: '',
+    csp: '',
+    description: '',
+    remise_valeur: '',
+    unite_offerte: '',
+    montant_minimum: '',
   });
 
   const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [laboStatus, setLaboStatus] = useState(null);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
   const [laboId, setLaboId] = useState(null);
-  const [laboData, setLaboData] = useState(null);
+  const [laboStatus, setLaboStatus] = useState('loading');
   const [promoCount, setPromoCount] = useState(0);
+  const [user, setUser] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
-  useEffect(() => {
-    async function checkLabo() {
-      const { data, error } = await supabase
-        .from('laboratoires')
-        .select('*')
-        .limit(1)
-        .single();
-
-      if (error || !data) {
-        setLaboStatus('no_labo');
-        return;
-      }
-
-      setLaboId(data.id);
-      setLaboData(data);
-
-      if (data.statut === 'expired') {
-        setLaboStatus('expired');
-        return;
-      }
-
-      const { count } = await supabase
-        .from('promotions')
-        .select('*', { count: 'exact', head: true })
-        .eq('laboratoire_id', data.id)
-        .eq('active', true);
-
-      setPromoCount(count || 0);
-      setLaboStatus('ok');
-    }
-
-    checkLabo();
-  }, []);
-
-  const typeOptions = [
-    { value: 'PERCENT', label: 'Remise (%)' },
-    { value: 'FREE_ITEM', label: 'Unité offerte' },
-    { value: 'RETURN_EXPIRED', label: 'Reprise périmés' },
-    { value: 'ORDER_THRESHOLD', label: 'Montant minimum commande' }
-  ];
-
-  const conditionOptions = [
-    { value: 'ALL', label: 'Toutes les officines' },
-    { value: 'REORDER', label: 'Commande de réassort' },
-    { value: 'IMPLANTATION', label: 'Commande d\'implantation' }
-  ];
-
-  const visibilityOptions = [
-    { value: 'PUBLIC', label: 'Publique - conditions visibles' },
-    { value: 'SEMI_PRIVATE', label: 'Semi-privée - conditions sur demande' }
-  ];
-
+  // === FAMILLES (version complète) ===
   const familleOptions = [
     // === DERMOCOSMETIQUE ===
     { value: 'DERMOCOSMETIQUE', label: '━ Dermocosmétique', isCategory: true },
@@ -309,6 +258,54 @@ export default function CreatePromotion({ setPage }) {
     { value: 'AUTRE', label: '━ Autre', isCategory: true }
   ];
 
+  useEffect(() => {
+    checkLabo();
+  }, []);
+
+  async function checkLabo() {
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !authData?.user) {
+      setLaboStatus('no_labo');
+      return;
+    }
+
+    const userId = authData.user.id;
+    setUser(authData.user);
+
+    const { data, error } = await supabase
+      .from('laboratoires')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+
+    if (error || !data) {
+      setLaboStatus('no_labo');
+      return;
+    }
+
+    setLaboId(data.id);
+
+    if (data.statut === 'expired') {
+      setLaboStatus('expired');
+      return;
+    }
+
+    const { count } = await supabase
+      .from('promotions')
+      .select('*', { count: 'exact', head: true })
+      .eq('laboratoire_id', data.id)
+      .eq('active', true);
+
+    setPromoCount(count || 0);
+    setLaboStatus('ok');
+  }
+
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
+  }
+
   const getBadgeColor = (type) => {
     switch(type) {
       case 'PERCENT':
@@ -329,14 +326,32 @@ export default function CreatePromotion({ setPage }) {
     return option ? option.label : '';
   };
 
-  const getConditionLabel = (value) => {
-    const option = conditionOptions.find(opt => opt.value === value);
-    return option ? option.label : '';
-  };
+  const typeOptions = [
+    { value: 'PERCENT', label: 'Remise (%)' },
+    { value: 'FREE_ITEM', label: 'Unité offerte' },
+    { value: 'RETURN_EXPIRED', label: 'Reprise périmés' },
+    { value: 'ORDER_THRESHOLD', label: 'Montant minimum commande' }
+  ];
+
+  const conditionOptions = [
+    { value: 'ALL', label: 'Toutes les officines' },
+    { value: 'REORDER', label: 'Commande de réassort' },
+    { value: 'IMPLANTATION', label: 'Commande d\'implantation' }
+  ];
+
+  const visibilityOptions = [
+    { value: 'PUBLIC', label: 'Publique - conditions visibles' },
+    { value: 'SEMI_PRIVATE', label: 'Semi-privée - conditions sur demande' }
+  ];
 
   const getFamilleLabel = (value) => {
     const option = familleOptions.find(opt => opt.value === value);
     return option ? option.label.replace(/[━└ ]/g, '').trim() : '';
+  };
+
+  const getConditionLabel = (value) => {
+    const option = conditionOptions.find(opt => opt.value === value);
+    return option ? option.label : '';
   };
 
   const getOfferDetail = () => {
@@ -354,36 +369,6 @@ export default function CreatePromotion({ setPage }) {
     }
   };
 
-  function update(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    setSubmitted(false);
-  }
-
-  function buildDescription() {
-    const parts = [];
-    
-    if (form.csp) parts.push(`CSP : ${form.csp}`);
-    if (form.condition_client && form.condition_client !== 'ALL') {
-      parts.push(`Condition : ${getConditionLabel(form.condition_client)}`);
-    }
-    if (form.type_promo === 'PERCENT' && form.remise_valeur) {
-      parts.push(`Offre : Remise de ${form.remise_valeur} %`);
-    } else if (form.type_promo === 'FREE_ITEM' && form.unite_offerte) {
-      parts.push(`Offre : ${form.unite_offerte} unités offertes`);
-    } else if (form.type_promo === 'ORDER_THRESHOLD' && form.montant_minimum) {
-      parts.push(`Offre : Montant minimum de ${form.montant_minimum} €`);
-    } else {
-      parts.push(`Offre : ${getOfferDetail()}`);
-    }
-    if (form.implantation) parts.push(`Détail : ${form.implantation}`);
-    if (form.date_debut) parts.push(`Début : ${new Date(form.date_debut).toLocaleDateString('fr-FR')}`);
-    if (form.date_fin) parts.push(`Fin : ${new Date(form.date_fin).toLocaleDateString('fr-FR')}`);
-    if (form.famille) parts.push(`Famille : ${getFamilleLabel(form.famille)}`);
-    if (form.description) parts.push(form.description);
-    
-    return parts.join(' | ');
-  }
-
   async function uploadImage(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -394,149 +379,111 @@ export default function CreatePromotion({ setPage }) {
     const fileName = `${Date.now()}.${fileExt}`;
     const filePath = `promotions/${fileName}`;
 
-    console.log('Upload vers bucket "promotions", chemin:', filePath);
-
     const { data, error: uploadError } = await supabase.storage
       .from('promotions')
       .upload(filePath, file);
 
     if (uploadError) {
-      console.error('Erreur upload détaillée:', uploadError);
-      console.error('Message:', uploadError.message);
-      console.error('Statut:', uploadError.statusCode);
-      alert(`Erreur d'upload : ${uploadError.message}\n\nVérifie que le bucket "promotions" existe et est public.`);
+      console.error('Erreur upload:', uploadError);
+      alert(`Erreur d'upload : ${uploadError.message}`);
       setUploading(false);
       return;
     }
 
-    console.log('Upload réussi:', data);
-
     const { data: urlData } = supabase.storage
       .from('promotions')
       .getPublicUrl(filePath);
-
-    console.log('URL publique:', urlData.publicUrl);
 
     setForm({ ...form, image_url: urlData.publicUrl });
     setUploading(false);
     alert('Image téléchargée avec succès !');
   }
 
-  function validateForm() {
-    if (!form.produit.trim()) {
-      alert('Veuillez saisir un produit');
-      return false;
-    }
-    if (!form.csp.trim()) {
-      alert('Veuillez saisir le code produit (GS1-128 / EAN)');
-      return false;
-    }
-    if (!form.famille) {
-      alert('Veuillez sélectionner une famille de produit');
-      return false;
-    }
-    if (!form.date_debut) {
-      alert('Veuillez sélectionner une date de début');
-      return false;
-    }
-    if (!form.date_fin) {
-      alert('Veuillez sélectionner une date de fin');
-      return false;
-    }
-    if (form.date_fin < form.date_debut) {
-      alert('La date de fin doit être postérieure à la date de début');
-      return false;
-    }
-    
-    if (form.visibility_mode === 'PUBLIC') {
-      if (!form.description.trim()) {
-        alert('Veuillez saisir une description commerciale pour l\'offre publique');
-        return false;
-      }
-      if (form.type_promo === 'PERCENT' && !form.remise_valeur) {
-        alert('Veuillez saisir le pourcentage de remise');
-        return false;
-      }
-      if (form.type_promo === 'FREE_ITEM' && !form.unite_offerte) {
-        alert('Veuillez saisir le nombre d\'unités offertes');
-        return false;
-      }
-      if (form.type_promo === 'ORDER_THRESHOLD' && !form.montant_minimum) {
-        alert('Veuillez saisir le montant minimum de commande');
-        return false;
-      }
-    }
-    
-    return true;
-  }
-
-  async function submit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    
-    if (!validateForm()) return;
-    
-    if (promoCount >= 10) {
-      alert(`Vous avez déjà ${promoCount} promotions actives. L'offre permet jusqu'à 10 promotions simultanées.`);
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
+
+    if (!laboId) {
+      setError('Laboratoire non trouvé. Veuillez vous reconnecter.');
+      setLoading(false);
       return;
     }
-    
-    setLoading(true);
 
-    const fullDescription = buildDescription();
+    if (!form.produit.trim()) {
+      setError('Veuillez saisir le nom du produit.');
+      setLoading(false);
+      return;
+    }
+
+    if (!form.date_debut || !form.date_fin) {
+      setError('Veuillez sélectionner les dates de début et de fin.');
+      setLoading(false);
+      return;
+    }
+
+    const fullDescription = form.description || '';
 
     const { error } = await supabase.from('promotions').insert({
       titre: form.produit.trim(),
       description: fullDescription,
       produit: form.produit.trim(),
       type_promo: form.type_promo,
-      famille: form.famille,
+      famille: form.famille || null,
       image_url: form.image_url || null,
       laboratoire_id: laboId,
       visibility_mode: form.visibility_mode,
       condition_client: form.condition_client,
       date_debut: form.date_debut,
       date_fin: form.date_fin,
-      csp: form.csp,
-      active: true
+      csp: form.csp || null,
+      remise_valeur: form.type_promo === 'PERCENT' ? parseFloat(form.remise_valeur) || null : null,
+      unite_offerte: form.type_promo === 'FREE_ITEM' ? parseInt(form.unite_offerte) || null : null,
+      montant_minimum: form.type_promo === 'ORDER_THRESHOLD' ? parseFloat(form.montant_minimum) || null : null,
+      active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     });
 
     if (error) {
-      console.error('Erreur Supabase :', error);
-      alert('Erreur lors de la création : ' + error.message);
+      console.error('Erreur création promotion:', error);
+      setError('Erreur lors de la création de la promotion. Veuillez réessayer.');
       setLoading(false);
       return;
     }
 
-    setSubmitted(true);
+    setSuccess(true);
+    setLoading(false);
+
     setForm({
-      titre: '',
-      description: '',
       produit: '',
       type_promo: 'PERCENT',
-      csp: '',
-      remise_valeur: '',
-      unite_offerte: '',
-      condition_client: 'ALL',
-      implantation: '',
-      montant_minimum: '',
-      date_debut: '',
-      date_fin: '',
       famille: '',
       image_url: '',
-      visibility_mode: 'SEMI_PRIVATE'
+      visibility_mode: 'PUBLIC',
+      condition_client: 'ALL',
+      date_debut: '',
+      date_fin: '',
+      csp: '',
+      description: '',
+      remise_valeur: '',
+      unite_offerte: '',
+      montant_minimum: '',
     });
-    setLoading(false);
+
+    setTimeout(() => {
+      setPage('dashboard');
+    }, 2000);
   }
 
-  if (laboStatus === null) {
+  if (laboStatus === 'loading') {
     return (
       <div className="create-page">
-        <div className="create-header">
-          <button className="create-back-button" onClick={() => setPage('home')}>
-            ← Retour à l'accueil
-          </button>
-          <h1 className="create-title">Créer une promotion</h1>
-          <p className="create-subtitle">Chargement...</p>
+        <div className="create-container">
+          <div className="create-form-wrapper" style={{ textAlign: 'center', padding: '60px 40px' }}>
+            <p style={{ color: '#667399', fontSize: '16px' }}>Vérification du compte...</p>
+          </div>
         </div>
       </div>
     );
@@ -545,39 +492,21 @@ export default function CreatePromotion({ setPage }) {
   if (laboStatus === 'no_labo') {
     return (
       <div className="create-page">
-        <div className="create-header">
-          <button className="create-back-button" onClick={() => setPage('home')}>
-            ← Retour à l'accueil
-          </button>
-          <h1 className="create-title">Créer une promotion</h1>
-        </div>
         <div className="create-container">
           <div className="create-form-wrapper" style={{ textAlign: 'center', padding: '60px 40px' }}>
             <h2 style={{ color: '#061B5B', marginBottom: '12px', fontSize: '28px' }}>
-              Créez votre espace laboratoire
+              Accès non autorisé
             </h2>
-            <p style={{ color: '#667399', fontSize: '16px', lineHeight: '1.6', maxWidth: '480px', margin: '0 auto' }}>
-              Pour publier une promotion, vous devez d'abord créer votre espace laboratoire.
+            <p style={{ color: '#667399', fontSize: '16px', lineHeight: '1.6' }}>
+              Vous devez être connecté en tant que laboratoire pour créer une promotion.
             </p>
-            <p style={{ color: '#667399', fontSize: '15px', lineHeight: '1.6', maxWidth: '480px', margin: '12px auto 0' }}>
-              L'inscription lance votre essai gratuit de 30 jours. Vous pourrez ensuite publier jusqu'à 10 promotions actives.
-            </p>
-            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginTop: '28px', flexWrap: 'wrap' }}>
-              <button 
-                className="form-submit" 
-                onClick={() => setPage('pricing')}
-                style={{ width: 'auto', padding: '14px 40px' }}
-              >
-                Créer mon espace laboratoire
-              </button>
-              <button 
-                className="form-submit" 
-                onClick={() => setPage('home')}
-                style={{ width: 'auto', padding: '14px 40px', background: 'white', color: '#061B5B', border: '2px solid #E4EAF7', boxShadow: 'none' }}
-              >
-                Retour à l'accueil
-              </button>
-            </div>
+            <button 
+              className="form-submit" 
+              onClick={() => setPage('home')}
+              style={{ marginTop: '28px', width: 'auto', padding: '14px 40px' }}
+            >
+              Retour à l'accueil
+            </button>
           </div>
         </div>
       </div>
@@ -587,26 +516,20 @@ export default function CreatePromotion({ setPage }) {
   if (laboStatus === 'expired') {
     return (
       <div className="create-page">
-        <div className="create-header">
-          <button className="create-back-button" onClick={() => setPage('home')}>
-            ← Retour à l'accueil
-          </button>
-          <h1 className="create-title">Créer une promotion</h1>
-        </div>
         <div className="create-container">
           <div className="create-form-wrapper" style={{ textAlign: 'center', padding: '60px 40px' }}>
             <h2 style={{ color: '#061B5B', marginBottom: '12px', fontSize: '28px' }}>
-              Votre essai gratuit est terminé.
+              Abonnement expiré
             </h2>
-            <p style={{ color: '#667399', fontSize: '16px', lineHeight: '1.6', maxWidth: '480px', margin: '0 auto' }}>
-              Pour continuer à publier vos promotions, activez votre abonnement à 50 € / mois.
+            <p style={{ color: '#667399', fontSize: '16px', lineHeight: '1.6' }}>
+              Votre période d'essai est terminée. Pour continuer à publier des offres, veuillez activer votre abonnement.
             </p>
             <button 
               className="form-submit" 
               onClick={() => setPage('pricing')}
               style={{ marginTop: '28px', width: 'auto', padding: '14px 40px' }}
             >
-              Voir l'abonnement
+              Voir les offres
             </button>
           </div>
         </div>
@@ -614,65 +537,122 @@ export default function CreatePromotion({ setPage }) {
     );
   }
 
+  const maxPromos = 3;
+  const canCreate = promoCount < maxPromos;
+
   return (
     <div className="create-page">
+      {/* Fonds animés */}
+      <div className="create-bg" aria-hidden="true">
+        <div className="blob blob-1"></div>
+        <div className="blob blob-2"></div>
+        <div className="blob blob-3"></div>
+        <div className="blob blob-4"></div>
+        <div className="blob blob-5"></div>
+        <div className="blob blob-6"></div>
+        <div className="blob blob-7"></div>
+      </div>
+
       <div className="create-header">
         <button 
           type="button" 
           className="create-back-button"
-          onClick={() => setPage('home')}
+          onClick={() => setPage('dashboard')}
         >
-          ← Retour à l'accueil
+          ← Retour au dashboard
         </button>
-        <h1 className="create-title">Créer une promotion</h1>
-        <p className="create-subtitle">Diffusez vos offres auprès de 18.000 officines</p>
-        {promoCount >= 8 && (
-          <p style={{ color: promoCount >= 10 ? '#FF5F8F' : '#667399', fontSize: '14px', marginTop: '8px' }}>
-            {promoCount}/10 promotions actives
-          </p>
-        )}
+        <h1 className="create-title">Créer une nouvelle promotion</h1>
+        <p className="create-subtitle">
+          {canCreate 
+            ? `Il vous reste ${maxPromos - promoCount} offre${maxPromos - promoCount > 1 ? 's' : ''} à créer`
+            : 'Vous avez atteint le nombre maximum d\'offres actives'}
+        </p>
       </div>
 
       <div className="create-container">
         <div className="create-form-wrapper">
-          <form onSubmit={submit} className="create-form">
+          {!canCreate && (
+            <div style={{ 
+              background: 'rgba(255, 95, 143, 0.08)', 
+              padding: '16px 20px', 
+              borderRadius: '14px',
+              marginBottom: '20px',
+              border: '1px solid rgba(255, 95, 143, 0.2)'
+            }}>
+              <p style={{ margin: 0, color: '#FF5F8F', fontWeight: 600 }}>
+                Vous avez atteint le nombre maximum d'offres actives pour votre essai gratuit.
+              </p>
+              <button 
+                className="form-submit" 
+                onClick={() => setPage('pricing')}
+                style={{ marginTop: '12px', width: 'auto', padding: '10px 28px' }}
+              >
+                Passer à l'abonnement
+              </button>
+            </div>
+          )}
+
+          {success && (
+            <div className="form-success">
+              Promotion créée avec succès ! Redirection vers le dashboard...
+            </div>
+          )}
+
+          {error && (
+            <div style={{ 
+              background: 'rgba(255, 95, 143, 0.08)', 
+              color: '#FF5F8F',
+              padding: '16px 20px',
+              borderRadius: '16px',
+              border: '1px solid rgba(255, 95, 143, 0.2)',
+              fontWeight: 600,
+              fontSize: '15px'
+            }}>
+              ❌ {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="create-form">
             <div className="form-group">
-              <label htmlFor="produit" className="form-label">Produit</label>
+              <label htmlFor="produit" className="form-label">Produit *</label>
               <input
                 id="produit"
                 name="produit"
                 type="text"
+                className="form-input"
                 placeholder="Ex: Doliprane 1000mg"
                 value={form.produit}
-                onChange={update}
-                className="form-input"
+                onChange={handleChange}
                 required
+                disabled={!canCreate}
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="csp" className="form-label">Code produit (GS1-128 / EAN)</label>
+              <label htmlFor="csp" className="form-label">Code produit (GS1-128 / EAN) *</label>
               <input
                 id="csp"
                 name="csp"
                 type="text"
+                className="form-input"
                 placeholder="Ex: 0761234501236"
                 value={form.csp}
-                onChange={update}
-                className="form-input"
+                onChange={handleChange}
                 required
+                disabled={!canCreate}
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="famille" className="form-label">Famille de produit</label>
+              <label htmlFor="famille" className="form-label">Famille de produit *</label>
               <select
                 id="famille"
                 name="famille"
-                value={form.famille}
-                onChange={update}
                 className="form-select"
+                value={form.famille}
+                onChange={handleChange}
                 required
+                disabled={!canCreate}
               >
                 <option value="">Sélectionner une famille</option>
                 {familleOptions.map((option) => (
@@ -694,9 +674,9 @@ export default function CreatePromotion({ setPage }) {
                 name="image"
                 type="file"
                 accept="image/*"
-                onChange={uploadImage}
                 className="form-input-file"
-                disabled={uploading}
+                onChange={uploadImage}
+                disabled={uploading || !canCreate}
               />
               {uploading && <span className="form-help">Téléchargement en cours...</span>}
               {form.image_url && (
@@ -708,13 +688,15 @@ export default function CreatePromotion({ setPage }) {
             </div>
 
             <div className="form-group">
-              <label htmlFor="type_promo" className="form-label">Type de promotion</label>
+              <label htmlFor="type_promo" className="form-label">Type de promotion *</label>
               <select
                 id="type_promo"
                 name="type_promo"
-                value={form.type_promo}
-                onChange={update}
                 className="form-select"
+                value={form.type_promo}
+                onChange={handleChange}
+                required
+                disabled={!canCreate}
               >
                 {typeOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -726,18 +708,20 @@ export default function CreatePromotion({ setPage }) {
 
             {form.type_promo === 'PERCENT' && (
               <div className="form-group">
-                <label htmlFor="remise_valeur" className="form-label">Pourcentage de remise</label>
+                <label htmlFor="remise_valeur" className="form-label">Pourcentage de remise *</label>
                 <div className="form-input-with-suffix">
                   <input
                     id="remise_valeur"
                     name="remise_valeur"
                     type="number"
+                    className="form-input"
                     placeholder="Ex: 10"
                     value={form.remise_valeur}
-                    onChange={update}
-                    className="form-input"
+                    onChange={handleChange}
                     min="0"
                     max="100"
+                    required
+                    disabled={!canCreate}
                   />
                   <span className="form-input-suffix">%</span>
                 </div>
@@ -746,34 +730,38 @@ export default function CreatePromotion({ setPage }) {
 
             {form.type_promo === 'FREE_ITEM' && (
               <div className="form-group">
-                <label htmlFor="unite_offerte" className="form-label">Unités offertes</label>
+                <label htmlFor="unite_offerte" className="form-label">Unités offertes *</label>
                 <input
                   id="unite_offerte"
                   name="unite_offerte"
                   type="number"
+                  className="form-input"
                   placeholder="Ex: 2"
                   value={form.unite_offerte}
-                  onChange={update}
-                  className="form-input"
+                  onChange={handleChange}
                   min="1"
+                  required
+                  disabled={!canCreate}
                 />
               </div>
             )}
 
             {form.type_promo === 'ORDER_THRESHOLD' && (
               <div className="form-group">
-                <label htmlFor="montant_minimum" className="form-label">Montant minimum de commande</label>
+                <label htmlFor="montant_minimum" className="form-label">Montant minimum de commande *</label>
                 <div className="form-input-with-suffix">
                   <input
                     id="montant_minimum"
                     name="montant_minimum"
                     type="number"
+                    className="form-input"
                     placeholder="Ex: 150"
                     value={form.montant_minimum}
-                    onChange={update}
-                    className="form-input"
+                    onChange={handleChange}
                     min="0"
                     step="0.01"
+                    required
+                    disabled={!canCreate}
                   />
                   <span className="form-input-suffix">€</span>
                 </div>
@@ -781,13 +769,15 @@ export default function CreatePromotion({ setPage }) {
             )}
 
             <div className="form-group">
-              <label htmlFor="condition_client" className="form-label">Condition client</label>
+              <label htmlFor="condition_client" className="form-label">Condition client *</label>
               <select
                 id="condition_client"
                 name="condition_client"
-                value={form.condition_client}
-                onChange={update}
                 className="form-select"
+                value={form.condition_client}
+                onChange={handleChange}
+                required
+                disabled={!canCreate}
               >
                 {conditionOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -797,61 +787,50 @@ export default function CreatePromotion({ setPage }) {
               </select>
             </div>
 
-            {form.condition_client === 'IMPLANTATION' && (
-              <div className="form-group">
-                <label htmlFor="implantation" className="form-label">Détail commande d'implantation</label>
-                <input
-                  id="implantation"
-                  name="implantation"
-                  type="text"
-                  placeholder="Ex: Offre valable pour une première implantation de 15 unités minimum"
-                  value={form.implantation}
-                  onChange={update}
-                  className="form-input"
-                />
-              </div>
-            )}
-
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="date_debut" className="form-label">Date de début de l'offre</label>
+                <label htmlFor="date_debut" className="form-label">Date de début *</label>
                 <input
                   id="date_debut"
                   name="date_debut"
                   type="date"
+                  className="form-input"
                   min={new Date().toISOString().split('T')[0]}
                   max="2032-12-31"
                   value={form.date_debut}
-                  onChange={update}
-                  className="form-input"
+                  onChange={handleChange}
                   required
+                  disabled={!canCreate}
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="date_fin" className="form-label">Date de fin de l'offre</label>
+                <label htmlFor="date_fin" className="form-label">Date de fin *</label>
                 <input
                   id="date_fin"
                   name="date_fin"
                   type="date"
+                  className="form-input"
                   min={new Date().toISOString().split('T')[0]}
                   max="2032-12-31"
                   value={form.date_fin}
-                  onChange={update}
-                  className="form-input"
+                  onChange={handleChange}
                   required
+                  disabled={!canCreate}
                 />
               </div>
             </div>
 
             <div className="form-group">
-              <label htmlFor="visibility_mode" className="form-label">Visibilité de l'offre</label>
+              <label htmlFor="visibility_mode" className="form-label">Visibilité de l'offre *</label>
               <select
                 id="visibility_mode"
                 name="visibility_mode"
-                value={form.visibility_mode}
-                onChange={update}
                 className="form-select"
+                value={form.visibility_mode}
+                onChange={handleChange}
+                required
+                disabled={!canCreate}
               >
                 {visibilityOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -863,14 +842,16 @@ export default function CreatePromotion({ setPage }) {
 
             {form.visibility_mode === 'PUBLIC' && (
               <div className="form-group">
-                <label htmlFor="description" className="form-label">Description commerciale</label>
+                <label htmlFor="description" className="form-label">Description commerciale *</label>
                 <textarea
                   id="description"
                   name="description"
+                  className="form-textarea"
                   placeholder="Ex: 15 unités achetées + 2 offertes pour les nouveaux clients."
                   value={form.description}
-                  onChange={update}
-                  className="form-textarea"
+                  onChange={handleChange}
+                  required
+                  disabled={!canCreate}
                 />
                 <span className="form-help">
                   Précisez les quantités, conditions, dates et restrictions éventuelles.
@@ -891,18 +872,20 @@ export default function CreatePromotion({ setPage }) {
               </div>
             )}
 
-            <button type="submit" className="form-submit" disabled={loading || uploading || promoCount >= 10}>
-              {loading ? 'Publication en cours...' : promoCount >= 10 ? 'Limite de 10 promotions atteinte' : 'Publier la promotion'}
+            <button 
+              type="submit" 
+              className="form-submit"
+              disabled={!canCreate || loading || uploading}
+            >
+              {loading ? 'Publication en cours...' : 
+               uploading ? 'Téléchargement en cours...' :
+               !canCreate ? 'Limite de 3 promotions atteinte' : 
+               'Publier la promotion'}
             </button>
-
-            {submitted && (
-              <div className="form-success">
-                Promotion créée avec succès !
-              </div>
-            )}
           </form>
         </div>
 
+        {/* Preview */}
         <div className="create-preview">
           <h3 className="preview-title">Aperçu de la promotion</h3>
           <div className="preview-card">
@@ -913,7 +896,7 @@ export default function CreatePromotion({ setPage }) {
             )}
 
             <div className="preview-lab-info">
-              <span className="preview-lab-name">{laboData?.nom || 'Laboratoire'}</span>
+              <span className="preview-lab-name">Laboratoire</span>
             </div>
 
             <div className="preview-badge-wrapper">
@@ -982,7 +965,7 @@ export default function CreatePromotion({ setPage }) {
                   <div className="preview-block preview-block-contact">
                     <p className="preview-label">Contact</p>
                     <p className="preview-description" style={{ color: '#061B5B' }}>
-                      📞 {laboData?.telephone || 'Téléphone non renseigné'}
+                      📞 Téléphone non renseigné
                     </p>
                   </div>
                   <button className="preview-contact-btn">
