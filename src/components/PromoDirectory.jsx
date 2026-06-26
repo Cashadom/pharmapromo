@@ -1,120 +1,96 @@
 import React, { useState } from 'react';
+import { supabase } from '../lib/supabase';
 import './PromoDirectory.css';
 
-/**
- * Extrait les champs structurés de la description.
- * Format attendu : "Offre: ... | CSP: ... | Condition: ... | Date début: ... | Date fin: ... | Famille: ..."
- * Robuste aux variations d'accents/casse/ordre. Ne plante jamais si un champ manque.
- */
-function parseDescriptionFields(description) {
-  const result = {
-    offre: null,
-    csp: null,
-    condition: null,
-    dateDebut: null,
-    dateFin: null,
-    famille: null,
+export default function PromoDirectory({ setPage }) {
+  const [email, setEmail] = useState('');
+  const [pharmacyName, setPharmacyName] = useState('');
+  const [city, setCity] = useState('');
+  const [consent, setConsent] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    // Validation
+    if (!email.trim()) {
+      setError('Veuillez saisir votre email professionnel.');
+      setLoading(false);
+      return;
+    }
+
+    if (!email.includes('@') || !email.includes('.')) {
+      setError('Veuillez saisir un email valide.');
+      setLoading(false);
+      return;
+    }
+
+    if (!consent) {
+      setError('Veuillez accepter de recevoir les offres par email.');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { error: insertError } = await supabase
+        .from('newsletter_subscribers')
+        .insert({
+          email: email.trim().toLowerCase(),
+          pharmacy_name: pharmacyName.trim() || null,
+          city: city.trim() || null,
+          consent: consent,
+          source: 'homepage_directory_box',
+          created_at: new Date().toISOString()
+        });
+
+      if (insertError) {
+        console.error('Erreur insertion newsletter:', insertError);
+        
+        // Si l'email existe déjà, on ne bloque pas
+        if (insertError.code === '23505') { // Duplicate key
+          setSubmitted(true);
+          setLoading(false);
+          return;
+        }
+        
+        setError('Une erreur est survenue. Veuillez réessayer.');
+        setLoading(false);
+        return;
+      }
+
+      setSubmitted(true);
+      setLoading(false);
+    } catch (err) {
+      console.error('Erreur:', err);
+      setError('Une erreur est survenue. Veuillez réessayer.');
+      setLoading(false);
+    }
   };
 
-  if (!description) return result;
-
-  const segments = description.split('|').map((s) => s.trim()).filter(Boolean);
-
-  segments.forEach((segment) => {
-    const sepIndex = segment.indexOf(':');
-    if (sepIndex === -1) return;
-
-    const rawKey = segment.slice(0, sepIndex).trim();
-    const value = segment.slice(sepIndex + 1).trim();
-
-    const key = rawKey
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '');
-
-    if (key.includes('offre')) result.offre = value;
-    else if (key.includes('csp')) result.csp = value;
-    else if (key.includes('condition')) result.condition = value;
-    else if (key.includes('debut')) result.dateDebut = value;
-    else if (key.includes('fin')) result.dateFin = value;
-    else if (key.includes('famille')) result.famille = value;
-  });
-
-  return result;
-}
-
-// Fonction pour vérifier si une offre est proche de la date de fin (dans les 7 jours)
-function isExpiringSoon(dateFin) {
-  if (!dateFin) return false;
-  
-  const parts = dateFin.split('/');
-  if (parts.length !== 3) return false;
-  
-  const day = parseInt(parts[0], 10);
-  const month = parseInt(parts[1], 10) - 1;
-  const year = parseInt(parts[2], 10);
-  
-  if (isNaN(day) || isNaN(month) || isNaN(year)) return false;
-  
-  const endDate = new Date(year, month, day);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  
-  const diffTime = endDate - today;
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  
-  return diffDays >= 0 && diffDays <= 7;
-}
-
-export default function PromoDirectory({ promos, loading, setPage }) {
-  // Plus de filtres - on affiche simplement les 10 dernières promos
-  const displayPromos = promos.slice(0, 10);
-
-  if (loading) {
+  if (submitted) {
     return (
-      <section id="promo-directory" className="directory">
+      <section className="directory">
         <div className="directory-container">
-          <div className="directory-header">
-            <button 
-              className="see-all-offers-btn-header"
-              onClick={() => setPage('offres')}
-            >
-              Voir toutes les offres →
-            </button>
-          </div>
-          <div className="directory-list">
-            <div className="directory-list-head" aria-hidden="true">
-              <span>Promotion</span>
-              <span>Type</span>
-              <span>Famille</span>
-              <span>Offre</span>
-              <span>Date fin</span>
-              <span></span>
-            </div>
-            <div className="directory-rows">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
-                <div key={n} className="promo-row skeleton">
-                  <div className="row-cell row-cell-main">
-                    <div className="skeleton-bar skeleton-title-bar"></div>
-                    <div className="skeleton-bar skeleton-product-bar"></div>
-                  </div>
-                  <div className="row-cell">
-                    <div className="skeleton-bar skeleton-badge-bar"></div>
-                  </div>
-                  <div className="row-cell">
-                    <div className="skeleton-bar skeleton-small-bar"></div>
-                  </div>
-                  <div className="row-cell">
-                    <div className="skeleton-bar skeleton-small-bar"></div>
-                  </div>
-                  <div className="row-cell">
-                    <div className="skeleton-bar skeleton-small-bar"></div>
-                  </div>
-                  <div className="row-cell row-cell-action">
-                    <div className="skeleton-bar skeleton-link-bar"></div>
-                  </div>
-                </div>
-              ))}
+          <div className="directory-box">
+            <div className="directory-success">
+              <div className="success-icon">✓</div>
+              <h2 className="directory-title">Merci !</h2>
+              <p className="directory-success-text">
+                Vous recevrez les prochaines offres PharmaPromo par email.
+              </p>
+              <p className="directory-success-sub">
+                Désinscription possible à tout moment.
+              </p>
+              <button 
+                className="directory-cta-link"
+                onClick={() => setPage('offres')}
+              >
+                Voir toutes les offres →
+              </button>
             </div>
           </div>
         </div>
@@ -123,120 +99,105 @@ export default function PromoDirectory({ promos, loading, setPage }) {
   }
 
   return (
-    <section id="promo-directory" className="directory">
+    <section className="directory">
+      {/* Fonds animés */}
+      <div className="directory-bg" aria-hidden="true">
+        <div className="blob blob-1"></div>
+        <div className="blob blob-2"></div>
+        <div className="blob blob-3"></div>
+        <div className="blob blob-4"></div>
+      </div>
+
       <div className="directory-container">
-        <div className="directory-header">
-          <button 
-            className="see-all-offers-btn-header"
-            onClick={() => setPage('offres')}
-          >
-            Voir toutes les offres →
-          </button>
+        <div className="directory-box">
+          <div className="directory-box-gradient"></div>
+
+          <div className="directory-header">
+            <button 
+              className="directory-see-all-btn"
+              onClick={() => setPage('offres')}
+            >
+              Voir toutes les offres →
+            </button>
+          </div>
+
+          <h2 className="directory-title">Recevoir les offres par courriel</h2>
+          <p className="directory-subtitle">
+            Recevez les dernières promotions laboratoires directement dans votre boîte mail, sans chercher dans vos emails.
+          </p>
+
+          {error && (
+            <div className="directory-error">
+              ❌ {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="directory-form">
+            <div className="form-group">
+              <label htmlFor="email" className="form-label">Email professionnel *</label>
+              <input
+                id="email"
+                type="email"
+                className="directory-input"
+                placeholder="pharmacie@officine.fr"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={loading}
+              />
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="pharmacy" className="form-label">Nom de la pharmacie</label>
+                <input
+                  id="pharmacy"
+                  type="text"
+                  className="directory-input"
+                  placeholder="Pharmacie Centrale"
+                  value={pharmacyName}
+                  onChange={(e) => setPharmacyName(e.target.value)}
+                  disabled={loading}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="city" className="form-label">Ville</label>
+                <input
+                  id="city"
+                  type="text"
+                  className="directory-input"
+                  placeholder="Lyon"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  disabled={loading}
+                />
+              </div>
+            </div>
+
+            <div className="form-checkbox">
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(e) => setConsent(e.target.checked)}
+                  disabled={loading}
+                />
+                <span className="checkbox-text">
+                  J’accepte de recevoir les offres laboratoires publiées sur PharmaPromo.
+                </span>
+              </label>
+            </div>
+
+            <button 
+              type="submit" 
+              className="directory-button"
+              disabled={loading}
+            >
+              {loading ? 'Inscription en cours...' : 'Recevoir les offres'}
+            </button>
+          </form>
         </div>
-
-        {displayPromos.length === 0 ? (
-          <div className="directory-empty">
-            <div className="empty-card">
-              <p>Aucune promotion active actuellement.</p>
-            </div>
-          </div>
-        ) : (
-          <div className="directory-list">
-            <div className="directory-list-head" aria-hidden="true">
-              <span>Promotion</span>
-              <span>Type</span>
-              <span>Famille</span>
-              <span>Offre</span>
-              <span>Date fin</span>
-              <span></span>
-            </div>
-
-            <div className="directory-rows" role="list">
-              {displayPromos.map((promo) => {
-                const fields = parseDescriptionFields(promo.description);
-                const expiringSoon = isExpiringSoon(fields.dateFin);
-
-                const metaParts = [
-                  fields.csp && `CSP : ${fields.csp}`,
-                  fields.condition,
-                  fields.dateDebut && `Dès le ${fields.dateDebut}`
-                ].filter(Boolean);
-                const metaLine = metaParts.length ? metaParts.join(' · ') : null;
-
-                return (
-                  <div key={promo.id} className={`promo-row ${expiringSoon ? 'expiring-soon' : ''}`} role="listitem">
-                    {expiringSoon && (
-                      <div className="expiring-badge">
-                        <span className="expiring-dot"></span>
-                        Se termine bientôt
-                      </div>
-                    )}
-                    <div className="row-cell row-cell-main">
-                      <h3 className="row-title">{promo.titre}</h3>
-                      <div className="row-product">
-                        <span className="row-product-label">Produit :</span>
-                        <span className="row-product-name">{promo.produit}</span>
-                      </div>
-                      {metaLine && <p className="row-meta">{metaLine}</p>}
-                    </div>
-
-                    <div className="row-cell" data-label="Type">
-                      <span className={`row-badge ${getBadgeColor(promo.type_promo)}`}>
-                        {getBadgeLabel(promo.type_promo)}
-                      </span>
-                    </div>
-
-                    <div className="row-cell" data-label="Famille">
-                      <span className="row-famille">{fields.famille || '—'}</span>
-                    </div>
-
-                    <div className="row-cell" data-label="Offre">
-                      <span className="row-offre">{fields.offre || '—'}</span>
-                    </div>
-
-                    <div className="row-cell" data-label="Date fin">
-                      <span className={`row-date ${expiringSoon ? 'date-expiring' : ''}`}>
-                        {fields.dateFin || '—'}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
       </div>
     </section>
   );
-}
-
-// Fonctions getBadgeColor et getBadgeLabel en dehors du composant
-function getBadgeColor(type) {
-  switch (type) {
-    case 'PERCENT':
-      return 'badge-percent';
-    case 'FREE_ITEM':
-      return 'badge-free';
-    case 'REORDER':
-      return 'badge-reorder';
-    case 'ORDER_THRESHOLD':
-      return 'badge-threshold';
-    default:
-      return 'badge-default';
-  }
-}
-
-function getBadgeLabel(type) {
-  switch (type) {
-    case 'PERCENT':
-      return '%';
-    case 'FREE_ITEM':
-      return 'Offert';
-    case 'REORDER':
-      return 'Réassort';
-    case 'ORDER_THRESHOLD':
-      return 'Montant min.';
-    default:
-      return '';
-  }
 }
