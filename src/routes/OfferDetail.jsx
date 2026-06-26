@@ -119,22 +119,32 @@ export default function OfferDetail({ setPage, offerId }) {
 
   function getMailtoLink() {
     if (!offer) return '#';
+    
+    // Email du laboratoire (destinataire)
     const laboEmail = offer.laboratoires?.email || '';
+    
+    // Objet professionnel avec PharmaPromo, produit et EAN
     const subject = encodeURIComponent(
-      `PharmaPromo - ${offer.produit} - ${offer.csp || 'EAN'} - Demande d'informations`
+      `PharmaPromo - ${offer.produit}${offer.csp ? ` - ${offer.csp}` : ''} - Demande d'informations`
     );
+    
+    // Corps du message
     const body = encodeURIComponent(
-      `Bonjour,\n\nJe suis pharmacien et je souhaite obtenir plus d'informations sur votre offre :\n\n` +
+      `Bonjour,\n\nJe suis pharmacien(ne) et je souhaite obtenir plus d'informations sur votre offre :\n\n` +
       `Produit : ${offer.produit}\n` +
       `Code EAN : ${offer.csp || 'Non renseigné'}\n` +
       `Type d'offre : ${getTypeLabel(offer.type_promo)}\n` +
-      `Conditions : ${getConditionLabel(offer.condition_client)}\n\n` +
+      `Conditions : ${getConditionLabel(offer.condition_client)}\n` +
+      `Famille : ${offer.famille || 'Non renseignée'}\n` +
+      `Valable jusqu'au : ${offer.date_fin ? new Date(offer.date_fin).toLocaleDateString('fr-FR') : 'Non renseignée'}\n\n` +
       `Pouvez-vous me contacter pour me communiquer les conditions détaillées ?\n\n` +
       `Cordialement,\n` +
       `[Nom de la pharmacie]\n` +
       `[Téléphone]\n` +
       `[Email]`
     );
+    
+    // L'email du laboratoire est bien le destinataire
     return `mailto:${laboEmail}?subject=${subject}&body=${body}`;
   }
 

@@ -156,6 +156,18 @@
   text-align: center;
 }
 
+/* Style spécifique pour la carte "Modifier vos infos" */
+.stat-card-edit {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.stat-card-edit:hover {
+  border-color: #0B45D9;
+  box-shadow: 0 8px 24px rgba(11, 69, 217, 0.12);
+  transform: translateY(-4px);
+}
+
 .stat-number {
   font-size: 32px;
   font-weight: 700;
@@ -238,6 +250,7 @@
 .dashboard-table thead {
   background: #F7FAFF;
 }
+
 /* ---- Bouton Retour ---- */
 .dashboard-back-wrapper {
   padding-bottom: 16px;
@@ -259,6 +272,7 @@
   color: #0B45D9;
   transform: translateX(-2px);
 }
+
 .dashboard-table th {
   text-align: left;
   padding: 14px 20px;
@@ -513,6 +527,7 @@
   50% { opacity: 1; }
 }
 
+/* Responsive */
 @media (max-width: 1024px) {
   .dashboard-stats {
     grid-template-columns: repeat(2, 1fr);

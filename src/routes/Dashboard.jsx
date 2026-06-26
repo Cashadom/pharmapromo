@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import './Dashboard.css';
 import timeIcon from '../assets/time.png';
+import editIcon from '../assets/icon10.png'; // Ajout de l'icône pour modifier
 
 export default function Dashboard({ setPage }) {
   const [loading, setLoading] = useState(true);
@@ -10,6 +11,7 @@ export default function Dashboard({ setPage }) {
   const [promos, setPromos] = useState([]);
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
+  const [selectedOfferId, setSelectedOfferId] = useState(null);
 
   useEffect(() => {
     checkUser();
@@ -201,6 +203,14 @@ export default function Dashboard({ setPage }) {
               <img src={timeIcon} alt="Statut" className="stat-icon-img" />
             </div>
             <div className="stat-label">{labo.statut === 'active' ? 'Actif' : labo.statut === 'trial' ? 'Essai' : 'Expiré'}</div>
+          </div>
+          {/* Nouvelle 4e carte : Modifier vos infos */}
+          <div className="stat-card stat-card-edit">
+            <div className="stat-icon-card">
+              <img src={editIcon} alt="Modifier" className="stat-icon-img" />
+            </div>
+            <div className="stat-label">Modifier vos infos</div>
+            {/* Le lien sera ajouté plus tard */}
           </div>
         </div>
 
